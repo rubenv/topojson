@@ -17,6 +17,14 @@ type Arc struct {
 
 type Point [2]float64
 
+func NewPoint(coords []float64) Point {
+	return Point{coords[0], coords[1]}
+}
+
+func PointEquals(a, b []float64) bool {
+	return a[0] == b[0] && a[1] == b[1]
+}
+
 type topologyObject struct {
 	Type geojson.GeometryType
 
