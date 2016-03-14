@@ -76,11 +76,11 @@ func TestLineSlices(t *testing.T) {
 
 	foo := topo.objects["foo"]
 	is.Equal(foo.Type, geojson.GeometryLineString)
-	is.True(reflect.DeepEqual(foo.Arc, Arc{0, 2}))
+	is.True(reflect.DeepEqual(foo.Arc, &Arc{Start: 0, End: 2}))
 
 	bar := topo.objects["bar"]
 	is.Equal(bar.Type, geojson.GeometryLineString)
-	is.True(reflect.DeepEqual(bar.Arc, Arc{3, 5}))
+	is.True(reflect.DeepEqual(bar.Arc, &Arc{Start: 3, End: 5}))
 }
 
 // extract exposes the constructed lines and rings in the order of construction
@@ -104,12 +104,12 @@ func TestExtractRingsOrder(t *testing.T) {
 	topo := &Topology{}
 	topo.extract(in)
 
-	is.True(reflect.DeepEqual(topo.lines, []Arc{
-		{0, 2},
-		{3, 5},
+	is.True(reflect.DeepEqual(topo.lines, []*Arc{
+		{Start: 0, End: 2},
+		{Start: 3, End: 5},
 	}))
-	is.True(reflect.DeepEqual(topo.rings, []Arc{
-		{6, 9},
+	is.True(reflect.DeepEqual(topo.rings, []*Arc{
+		{Start: 6, End: 9},
 	}))
 }
 
@@ -136,5 +136,5 @@ func TestExtractNested(t *testing.T) {
 	geometries = foo.Geometries[0].Geometries
 	is.Equal(len(geometries), 1)
 	is.Equal(geometries[0].Type, geojson.GeometryLineString)
-	is.True(reflect.DeepEqual(geometries[0].Arc, Arc{0, 1}))
+	is.True(reflect.DeepEqual(geometries[0].Arc, &Arc{Start: 0, End: 1}))
 }

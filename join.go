@@ -55,8 +55,8 @@ func (t *Topology) join() junctionMap {
 	}
 
 	for i, l := range t.lines {
-		start := l[0]
-		end := l[1]
+		start := l.Start
+		end := l.End
 
 		previous := 0
 		current := indexes[start]
@@ -84,8 +84,8 @@ func (t *Topology) join() junctionMap {
 	}
 
 	for i, r := range t.rings {
-		start := r[0] + 1
-		end := r[1]
+		start := r.Start + 1
+		end := r.End
 
 		previous := indexes[(end-1)%n]
 		current := indexes[start-1]
