@@ -11,6 +11,8 @@ type Topology struct {
 
 type Arc [2]int
 
+type Point [2]float64
+
 type topologyObject struct {
 	Type geojson.GeometryType
 
