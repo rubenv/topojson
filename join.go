@@ -87,9 +87,9 @@ func (t *Topology) join() junctionMap {
 		start := r[0] + 1
 		end := r[1]
 
-		previous := indexes[end-1]
+		previous := indexes[(end-1)%n]
 		current := indexes[start-1]
-		next := indexes[start]
+		next := indexes[start%n]
 
 		sequence(i, previous, current, next)
 
