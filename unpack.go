@@ -54,7 +54,13 @@ func lookupArc(arcs map[arcEntry]int, a *arc) []int {
 	result := make([]int, 0)
 
 	for a != nil {
-		result = append(result, arcs[arcEntry{a.Start, a.End}])
+		if a.Start < a.End {
+			index := arcs[arcEntry{a.Start, a.End}]
+			result = append(result, index)
+		} else {
+			index := arcs[arcEntry{a.End, a.Start}]
+			result = append(result, -index)
+		}
 		a = a.Next
 	}
 
