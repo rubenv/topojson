@@ -3,15 +3,33 @@ package topojson
 import "github.com/paulmach/go.geojson"
 
 func (t *Topology) extract() {
-	t.objects = make(map[string]*topologyObject)
+	t.objects = make([]*topologyObject, 0, len(t.input))
 
 	for _, g := range t.input {
-		t.objects[g.id] = t.extractGeometry(g.geom)
+		t.objects = append(t.objects, t.extractFeature(g))
 	}
 	t.input = nil // no longer needed
 }
 
+func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
+	g := f.Geometry
+	o := t.extractGeometry(g)
+
+	idProp := "id"
+	if t.opts != nil && t.opts.IDProperty != "" {
+		idProp = t.opts.IDProperty
+	}
+
+	id, err := f.PropertyString(idProp)
+	if err == nil {
+		o.ID = id
+	}
+
+	return o
+}
+
 func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
+
 	o := &topologyObject{
 		Type: g.Type,
 	}

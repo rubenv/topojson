@@ -14,13 +14,13 @@ import (
 func TestCopiesCoordinates(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"foo", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("foo", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"bar", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("bar", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	expected := [][]float64{
@@ -40,10 +40,10 @@ func TestCopiesCoordinates(t *testing.T) {
 func TestClosingCoordinates(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"foo", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("foo", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {0, 0},
-		})},
+		})),
 	}
 
 	expected := [][]float64{
@@ -62,23 +62,23 @@ func TestClosingCoordinates(t *testing.T) {
 func TestLineSlices(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"foo", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("foo", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"bar", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("bar", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 
-	foo := topo.objects["foo"]
+	foo := GetFeature(topo, "foo")
 	is.Equal(foo.Type, geojson.GeometryLineString)
 	is.True(reflect.DeepEqual(foo.Arc, &arc{Start: 0, End: 2}))
 
-	bar := topo.objects["bar"]
+	bar := GetFeature(topo, "bar")
 	is.Equal(bar.Type, geojson.GeometryLineString)
 	is.True(reflect.DeepEqual(bar.Arc, &arc{Start: 3, End: 5}))
 }
@@ -87,18 +87,18 @@ func TestLineSlices(t *testing.T) {
 func TestExtractRingsOrder(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"line", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("line", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"multiline", geojson.NewMultiLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("multiline", geojson.NewMultiLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"polygon", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("polygon", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
@@ -117,16 +117,16 @@ func TestExtractRingsOrder(t *testing.T) {
 func TestExtractNested(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"foo", geojson.NewCollectionGeometry(geojson.NewCollectionGeometry(geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("foo", geojson.NewCollectionGeometry(geojson.NewCollectionGeometry(geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {0, 1},
-		})))},
+		})))),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 
-	foo := topo.objects["foo"]
+	foo := GetFeature(topo, "foo")
 	is.Equal(foo.Type, geojson.GeometryCollection)
 
 	geometries := foo.Geometries

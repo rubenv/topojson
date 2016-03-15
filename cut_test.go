@@ -14,26 +14,26 @@ import (
 func TestCutDuplicates(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"abc2", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abc2", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abc2"]
+	o2 := GetFeature(topo, "abc2")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 5)
@@ -44,26 +44,26 @@ func TestCutDuplicates(t *testing.T) {
 func TestCutReversedDuplicates(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"cba", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
 			{2, 0}, {1, 0}, {0, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["cba"]
+	o2 := GetFeature(topo, "cba")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 5)
@@ -74,31 +74,31 @@ func TestCutReversedDuplicates(t *testing.T) {
 func TestCutDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
-		{"abca2", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("abca2", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["abca2"]
+	o2 := GetFeature(topo, "abca2")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -110,31 +110,31 @@ func TestCutDuplicateRings(t *testing.T) {
 func TestCutReversedDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
-		{"acba", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("acba", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {2, 0}, {1, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["acba"]
+	o2 := GetFeature(topo, "acba")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -146,31 +146,31 @@ func TestCutReversedDuplicateRings(t *testing.T) {
 func TestCutRotatedDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
-		{"bcab", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("bcab", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{1, 0}, {2, 0}, {0, 0}, {1, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["bcab"]
+	o2 := GetFeature(topo, "bcab")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -182,28 +182,28 @@ func TestCutRotatedDuplicateRings(t *testing.T) {
 func TestCutRingLine(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcaLine", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcaLine", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {0, 0},
-		})},
-		{"abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcaLine"]
+	o1 := GetFeature(topo, "abcaLine")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 3)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abcaPolygon"]
+	o2 := GetFeature(topo, "abcaPolygon")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -215,28 +215,28 @@ func TestCutRingLine(t *testing.T) {
 func TestCutRingLineReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcaLine", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcaLine", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {0, 0},
-		})},
-		{"bcabPolygon", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("bcabPolygon", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{1, 0}, {2, 0}, {0, 0}, {1, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcaLine"]
+	o1 := GetFeature(topo, "abcaLine")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 3)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["bcabPolygon"]
+	o2 := GetFeature(topo, "bcabPolygon")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -248,28 +248,28 @@ func TestCutRingLineReversed(t *testing.T) {
 func TestCutRingLineReversed2(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"bcabLine", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("bcabLine", geojson.NewLineStringGeometry([][]float64{
 			{1, 0}, {2, 0}, {0, 0}, {1, 0},
-		})},
-		{"abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {2, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["bcabLine"]
+	o1 := GetFeature(topo, "bcabLine")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 3)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abcaPolygon"]
+	o2 := GetFeature(topo, "abcaPolygon")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -281,20 +281,20 @@ func TestCutRingLineReversed2(t *testing.T) {
 func TestCutOldArcExtends(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"ab", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -302,7 +302,7 @@ func TestCutOldArcExtends(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["ab"]
+	o2 := GetFeature(topo, "ab")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -313,20 +313,20 @@ func TestCutOldArcExtends(t *testing.T) {
 func TestCutReversedOldArcExtends(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"cba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
 			{2, 0}, {1, 0}, {0, 0},
-		})},
-		{"ab", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["cba"]
+	o1 := GetFeature(topo, "cba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -334,7 +334,7 @@ func TestCutReversedOldArcExtends(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["ab"]
+	o2 := GetFeature(topo, "ab")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -345,26 +345,26 @@ func TestCutReversedOldArcExtends(t *testing.T) {
 func TestCutNewArcSharesStart(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"ade", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("ade", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 1}, {2, 1},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["ade"]
+	o1 := GetFeature(topo, "ade")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abc"]
+	o2 := GetFeature(topo, "abc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 5)
@@ -375,19 +375,19 @@ func TestCutNewArcSharesStart(t *testing.T) {
 func TestCutRingNoCuts(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"aba", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("aba", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["aba"]
+	o1 := GetFeature(topo, "aba")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -399,19 +399,19 @@ func TestCutRingNoCuts(t *testing.T) {
 func TestCutRingAANoCuts(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"aa", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("aa", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["aa"]
+	o1 := GetFeature(topo, "aa")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -423,19 +423,19 @@ func TestCutRingAANoCuts(t *testing.T) {
 func TestCutRingANoCuts(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"a", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("a", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["a"]
+	o1 := GetFeature(topo, "a")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -447,26 +447,26 @@ func TestCutRingANoCuts(t *testing.T) {
 func TestCutNewLineSharesEnd(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"dec", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("dec", geojson.NewLineStringGeometry([][]float64{
 			{0, 1}, {1, 1}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["dec"]
+	o2 := GetFeature(topo, "dec")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 5)
@@ -477,26 +477,26 @@ func TestCutNewLineSharesEnd(t *testing.T) {
 func TestCutNewLineExtends(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"ab", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0},
-		})},
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["ab"]
+	o1 := GetFeature(topo, "ab")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abc"]
+	o2 := GetFeature(topo, "abc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 2)
 	is.Equal(o2.Arc.End, 3)
@@ -509,26 +509,26 @@ func TestCutNewLineExtends(t *testing.T) {
 func TestCutNewLineExtendsReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"ba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("ba", geojson.NewLineStringGeometry([][]float64{
 			{1, 0}, {0, 0},
-		})},
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["ba"]
+	o1 := GetFeature(topo, "ba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
 	is.Nil(o1.Arc.Next)
 
-	o2 := topo.objects["abc"]
+	o2 := GetFeature(topo, "abc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 2)
 	is.Equal(o2.Arc.End, 3)
@@ -541,20 +541,20 @@ func TestCutNewLineExtendsReversed(t *testing.T) {
 func TestCutNewStartsMiddle(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"bc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("bc", geojson.NewLineStringGeometry([][]float64{
 			{1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -562,7 +562,7 @@ func TestCutNewStartsMiddle(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["bc"]
+	o2 := GetFeature(topo, "bc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -573,20 +573,20 @@ func TestCutNewStartsMiddle(t *testing.T) {
 func TestCutNewStartsMiddleReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"cba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
 			{2, 0}, {1, 0}, {0, 0},
-		})},
-		{"bc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("bc", geojson.NewLineStringGeometry([][]float64{
 			{1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["cba"]
+	o1 := GetFeature(topo, "cba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -594,7 +594,7 @@ func TestCutNewStartsMiddleReversed(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["bc"]
+	o2 := GetFeature(topo, "bc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -605,20 +605,20 @@ func TestCutNewStartsMiddleReversed(t *testing.T) {
 func TestCutNewLineDeviates(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"abd", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abd", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {3, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -626,7 +626,7 @@ func TestCutNewLineDeviates(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["abd"]
+	o2 := GetFeature(topo, "abd")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -639,20 +639,20 @@ func TestCutNewLineDeviates(t *testing.T) {
 func TestCutNewLineDeviatesReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"cba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
 			{2, 0}, {1, 0}, {0, 0},
-		})},
-		{"abd", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("abd", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {3, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["cba"]
+	o1 := GetFeature(topo, "cba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -660,7 +660,7 @@ func TestCutNewLineDeviatesReversed(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["abd"]
+	o2 := GetFeature(topo, "abd")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -673,20 +673,20 @@ func TestCutNewLineDeviatesReversed(t *testing.T) {
 func TestCutNewLineMerges(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"dbc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("dbc", geojson.NewLineStringGeometry([][]float64{
 			{3, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -694,7 +694,7 @@ func TestCutNewLineMerges(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["dbc"]
+	o2 := GetFeature(topo, "dbc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -707,20 +707,20 @@ func TestCutNewLineMerges(t *testing.T) {
 func TestCutNewLineMergesReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"cba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
 			{2, 0}, {1, 0}, {0, 0},
-		})},
-		{"dbc", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("dbc", geojson.NewLineStringGeometry([][]float64{
 			{3, 0}, {1, 0}, {2, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["cba"]
+	o1 := GetFeature(topo, "cba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -728,7 +728,7 @@ func TestCutNewLineMergesReversed(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["dbc"]
+	o2 := GetFeature(topo, "dbc")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -741,20 +741,20 @@ func TestCutNewLineMergesReversed(t *testing.T) {
 func TestCutNewLineSharesMidpoint(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abc", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0},
-		})},
-		{"dbe", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("dbe", geojson.NewLineStringGeometry([][]float64{
 			{0, 1}, {1, 0}, {2, 1},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abc"]
+	o1 := GetFeature(topo, "abc")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -762,7 +762,7 @@ func TestCutNewLineSharesMidpoint(t *testing.T) {
 	is.Equal(o1.Arc.Next.End, 2)
 	is.Nil(o1.Arc.Next.Next)
 
-	o2 := topo.objects["dbe"]
+	o2 := GetFeature(topo, "dbe")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 3)
 	is.Equal(o2.Arc.End, 4)
@@ -775,20 +775,20 @@ func TestCutNewLineSharesMidpoint(t *testing.T) {
 func TestCutNewLineSkipsPoint(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcde", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcde", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0},
-		})},
-		{"adbe", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("adbe", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {3, 0}, {4, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcde"]
+	o1 := GetFeature(topo, "abcde")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -799,7 +799,7 @@ func TestCutNewLineSkipsPoint(t *testing.T) {
 	is.Equal(o1Next.Next.End, 4)
 	is.Nil(o1Next.Next.Next)
 
-	o2 := topo.objects["adbe"]
+	o2 := GetFeature(topo, "adbe")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 5)
 	is.Equal(o2.Arc.End, 6)
@@ -815,20 +815,20 @@ func TestCutNewLineSkipsPoint(t *testing.T) {
 func TestCutNewLineSkipsPointReversed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"edcba", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("edcba", geojson.NewLineStringGeometry([][]float64{
 			{4, 0}, {3, 0}, {2, 0}, {1, 0}, {0, 0},
-		})},
-		{"adbe", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("adbe", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {3, 0}, {4, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["edcba"]
+	o1 := GetFeature(topo, "edcba")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -839,7 +839,7 @@ func TestCutNewLineSkipsPointReversed(t *testing.T) {
 	is.Equal(o1Next.Next.End, 4)
 	is.Nil(o1Next.Next.Next)
 
-	o2 := topo.objects["adbe"]
+	o2 := GetFeature(topo, "adbe")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 5)
 	is.Equal(o2.Arc.End, 6)
@@ -855,17 +855,17 @@ func TestCutNewLineSkipsPointReversed(t *testing.T) {
 func TestCutSelfIntersectsMiddle(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcdbe", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcdbe", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {1, 0}, {4, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcdbe"]
+	o1 := GetFeature(topo, "abcdbe")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 5)
@@ -876,17 +876,17 @@ func TestCutSelfIntersectsMiddle(t *testing.T) {
 func TestCutSelfIntersectsStart(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abacd", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abacd", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {0, 0}, {3, 0}, {4, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abacd"]
+	o1 := GetFeature(topo, "abacd")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
@@ -899,17 +899,17 @@ func TestCutSelfIntersectsStart(t *testing.T) {
 func TestCutSelfIntersectsEnd(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcdbd", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcdbd", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {4, 0}, {3, 0}, {4, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcdbd"]
+	o1 := GetFeature(topo, "abcdbd")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 2)
@@ -922,20 +922,20 @@ func TestCutSelfIntersectsEnd(t *testing.T) {
 func TestCutSelfIntersectsShares(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcdbe", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcdbe", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {1, 0}, {4, 0},
-		})},
-		{"fbg", geojson.NewLineStringGeometry([][]float64{
+		})),
+		NewTestFeature("fbg", geojson.NewLineStringGeometry([][]float64{
 			{0, 1}, {1, 0}, {2, 1},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcdbe"]
+	o1 := GetFeature(topo, "abcdbe")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 1)
@@ -946,7 +946,7 @@ func TestCutSelfIntersectsShares(t *testing.T) {
 	is.Equal(o1Next.Next.End, 5)
 	is.Nil(o1Next.Next.Next)
 
-	o2 := topo.objects["fbg"]
+	o2 := GetFeature(topo, "fbg")
 	is.Equal(o2.Type, geojson.GeometryLineString)
 	is.Equal(o2.Arc.Start, 6)
 	is.Equal(o2.Arc.End, 7)
@@ -959,17 +959,17 @@ func TestCutSelfIntersectsShares(t *testing.T) {
 func TestCutLineClosed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewLineStringGeometry([][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewLineStringGeometry([][]float64{
 			{0, 0}, {1, 0}, {0, 1}, {0, 0},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryLineString)
 	is.Equal(o1.Arc.Start, 0)
 	is.Equal(o1.Arc.End, 3)
@@ -980,19 +980,19 @@ func TestCutLineClosed(t *testing.T) {
 func TestCutRingClosed(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -1004,31 +1004,31 @@ func TestCutRingClosed(t *testing.T) {
 func TestCutDuplicateRingsShare(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
-		{"abca2", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("abca2", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["abca2"]
+	o2 := GetFeature(topo, "abca2")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -1040,31 +1040,31 @@ func TestCutDuplicateRingsShare(t *testing.T) {
 func TestCutDuplicateRingsReversedShare(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
-		{"acba", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("acba", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {0, 1}, {1, 0}, {0, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["acba"]
+	o2 := GetFeature(topo, "acba")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -1076,31 +1076,31 @@ func TestCutDuplicateRingsReversedShare(t *testing.T) {
 func TestCutCoincidentRings(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
-		{"bcab", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("bcab", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{1, 0}, {0, 1}, {0, 0}, {1, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["bcab"]
+	o2 := GetFeature(topo, "bcab")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -1112,31 +1112,31 @@ func TestCutCoincidentRings(t *testing.T) {
 func TestCutCoincidentRings2(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
-		{"bacb", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("bacb", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{1, 0}, {0, 0}, {0, 1}, {1, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["bacb"]
+	o2 := GetFeature(topo, "bacb")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -1148,29 +1148,29 @@ func TestCutCoincidentRings2(t *testing.T) {
 func TestCutCoincidentRings3(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcda", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcda", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 0},
 			},
-		})},
-		{"efae", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("efae", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, -1}, {1, -1}, {0, 0}, {0, -1},
 			},
-		})},
-		{"ghcg", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("ghcg", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 2}, {1, 2}, {1, 1}, {0, 2},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcda"]
+	o1 := GetFeature(topo, "abcda")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -1179,14 +1179,14 @@ func TestCutCoincidentRings3(t *testing.T) {
 	is.Equal(o1.Arcs[0].Next.End, 4)
 	is.Nil(o1.Arcs[0].Next.Next)
 
-	o2 := topo.objects["efae"]
+	o2 := GetFeature(topo, "efae")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 5)
 	is.Equal(o2.Arcs[0].End, 8)
 	is.Nil(o2.Arcs[0].Next)
 
-	o3 := topo.objects["ghcg"]
+	o3 := GetFeature(topo, "ghcg")
 	is.Equal(o3.Type, geojson.GeometryPolygon)
 	is.Equal(len(o3.Arcs), 1)
 	is.Equal(o3.Arcs[0].Start, 9)
@@ -1198,31 +1198,31 @@ func TestCutCoincidentRings3(t *testing.T) {
 func TestCutNoCutsButRotated(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abca", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {0, 1}, {0, 0},
 			},
-		})},
-		{"dbed", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("dbed", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{2, 1}, {1, 0}, {2, 2}, {2, 1},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abca"]
+	o1 := GetFeature(topo, "abca")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
 	is.Equal(o1.Arcs[0].End, 3)
 	is.Nil(o1.Arcs[0].Next)
 
-	o2 := topo.objects["dbed"]
+	o2 := GetFeature(topo, "dbed")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 4)
@@ -1241,24 +1241,24 @@ func TestCutNoCutsButRotated(t *testing.T) {
 func TestCutOverlapping(t *testing.T) {
 	is := is.New(t)
 
-	in := []*inputGeometry{
-		{"abcda", geojson.NewPolygonGeometry([][][]float64{
+	in := []*geojson.Feature{
+		NewTestFeature("abcda", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{0, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 0}, // rotated to BCDAB, cut BC-CDAB
 			},
-		})},
-		{"befcb", geojson.NewPolygonGeometry([][][]float64{
+		})),
+		NewTestFeature("befcb", geojson.NewPolygonGeometry([][][]float64{
 			{
 				{1, 0}, {2, 0}, {2, 1}, {1, 1}, {1, 0},
 			},
-		})},
+		})),
 	}
 
 	topo := &Topology{input: in}
 	topo.extract()
 	topo.cut()
 
-	o1 := topo.objects["abcda"]
+	o1 := GetFeature(topo, "abcda")
 	is.Equal(o1.Type, geojson.GeometryPolygon)
 	is.Equal(len(o1.Arcs), 1)
 	is.Equal(o1.Arcs[0].Start, 0)
@@ -1267,7 +1267,7 @@ func TestCutOverlapping(t *testing.T) {
 	is.Equal(o1.Arcs[0].Next.End, 4)
 	is.Nil(o1.Arcs[0].Next.Next)
 
-	o2 := topo.objects["befcb"]
+	o2 := GetFeature(topo, "befcb")
 	is.Equal(o2.Type, geojson.GeometryPolygon)
 	is.Equal(len(o2.Arcs), 1)
 	is.Equal(o2.Arcs[0].Start, 5)

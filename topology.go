@@ -15,9 +15,10 @@ type Topology struct {
 	Arcs        [][][]float64 `json:"arcs"`
 
 	// For internal use only
-	input       []*inputGeometry
+	opts        *TopologyOptions
+	input       []*geojson.Feature
 	coordinates [][]float64
-	objects     map[string]*topologyObject
+	objects     []*topologyObject
 	lines       []*arc
 	rings       []*arc
 }
@@ -27,15 +28,37 @@ type Transform struct {
 	Translate [2]float64 `json:"translate"`
 }
 
-func NewTopology(features *geojson.FeatureCollection) *Topology {
+type TopologyOptions struct {
+	// Quantization precision, in number of digits, set to -1 to skip
+	Quantize int
+
+	// Simplification precision, set to 0 to skip
+	Simplify float64
+
+	// ID property key
+	IDProperty string
+}
+
+func NewTopology(features *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
+	if opts == nil {
+		opts = &TopologyOptions{
+			Quantize:   -1,
+			Simplify:   0,
+			IDProperty: "id",
+		}
+	}
+
 	topo := &Topology{
 		input: nil, // TODO
+		opts:  opts,
 	}
 
 	topo.extract()
 	topo.join()
 	topo.cut()
 	topo.dedup()
+
+	topo.input = nil
 
 	return topo
 }
@@ -72,12 +95,8 @@ func pointEquals(a, b []float64) bool {
 	return a[0] == b[0] && a[1] == b[1]
 }
 
-type inputGeometry struct {
-	id   string
-	geom *geojson.Geometry
-}
-
 type topologyObject struct {
+	ID   string
 	Type geojson.GeometryType
 
 	Geometries []*topologyObject // For geometry collections
