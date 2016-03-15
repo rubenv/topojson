@@ -24,12 +24,12 @@ func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 	case geojson.GeometryLineString:
 		o.Arc = t.extractLine(g.LineString)
 	case geojson.GeometryMultiLineString:
-		o.Arcs = make([]*Arc, len(g.MultiLineString))
+		o.Arcs = make([]*arc, len(g.MultiLineString))
 		for i, l := range g.MultiLineString {
 			o.Arcs[i] = t.extractLine(l)
 		}
 	case geojson.GeometryPolygon:
-		o.Arcs = make([]*Arc, len(g.Polygon))
+		o.Arcs = make([]*arc, len(g.Polygon))
 		for i, r := range g.Polygon {
 			o.Arcs[i] = t.extractRing(r)
 		}
@@ -38,27 +38,27 @@ func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 	return o
 }
 
-func (t *Topology) extractLine(line [][]float64) *Arc {
+func (t *Topology) extractLine(line [][]float64) *arc {
 	n := len(line)
 	for i := 0; i < n; i++ {
 		t.coordinates = append(t.coordinates, line[i])
 	}
 
 	index := len(t.coordinates) - 1
-	arc := &Arc{Start: index - n + 1, End: index}
+	arc := &arc{Start: index - n + 1, End: index}
 	t.lines = append(t.lines, arc)
 
 	return arc
 }
 
-func (t *Topology) extractRing(ring [][]float64) *Arc {
+func (t *Topology) extractRing(ring [][]float64) *arc {
 	n := len(ring)
 	for i := 0; i < n; i++ {
 		t.coordinates = append(t.coordinates, ring[i])
 	}
 
 	index := len(t.coordinates) - 1
-	arc := &Arc{Start: index - n + 1, End: index}
+	arc := &arc{Start: index - n + 1, End: index}
 	t.rings = append(t.rings, arc)
 
 	return arc

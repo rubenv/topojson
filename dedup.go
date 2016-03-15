@@ -1,11 +1,11 @@
 package topojson
 
 func (t *Topology) dedup() {
-	arcsByEnd := make(map[Point][]*Arc)
+	arcsByEnd := make(map[point][]*arc)
 
-	dedupLine := func(arc *Arc) {
+	dedupLine := func(arc *arc) {
 		// Does this arc match an existing arc in order?
-		startPoint := NewPoint(t.coordinates[arc.Start])
+		startPoint := newPoint(t.coordinates[arc.Start])
 		startArcs, startOk := arcsByEnd[startPoint]
 		if startOk {
 			for _, startArc := range startArcs {
@@ -18,7 +18,7 @@ func (t *Topology) dedup() {
 		}
 
 		// Does this arc match an existing arc in reverse order?
-		endPoint := NewPoint(t.coordinates[arc.End])
+		endPoint := newPoint(t.coordinates[arc.End])
 		endArcs, endOk := arcsByEnd[endPoint]
 		if endOk {
 			for _, endArc := range endArcs {
@@ -34,10 +34,10 @@ func (t *Topology) dedup() {
 		arcsByEnd[endPoint] = append(endArcs, arc)
 	}
 
-	dedupRing := func(arc *Arc) {
+	dedupRing := func(arc *arc) {
 		// Does this arc match an existing line in order, or reverse order?
 		// Rings are closed, so their start point and end point is the same.
-		endPoint := NewPoint(t.coordinates[arc.Start])
+		endPoint := newPoint(t.coordinates[arc.Start])
 		endArcs, endOk := arcsByEnd[endPoint]
 		if endOk {
 			for _, endArc := range endArcs {
@@ -56,7 +56,7 @@ func (t *Topology) dedup() {
 		}
 
 		// Otherwise, does this arc match an existing ring in order, or reverse order?
-		endPoint = NewPoint(t.coordinates[arc.Start+t.findMinimumOffset(arc)])
+		endPoint = newPoint(t.coordinates[arc.Start+t.findMinimumOffset(arc)])
 		endArcs, endOk = arcsByEnd[endPoint]
 		if endOk {
 			for _, endArc := range endArcs {
@@ -100,7 +100,7 @@ func (t *Topology) dedup() {
 	t.rings = nil
 }
 
-func (t *Topology) lineEqual(a, b *Arc) bool {
+func (t *Topology) lineEqual(a, b *arc) bool {
 	ia := a.Start
 	ib := b.Start
 	ja := a.End
@@ -110,7 +110,7 @@ func (t *Topology) lineEqual(a, b *Arc) bool {
 	}
 
 	for ia <= ja {
-		if !PointEquals(t.coordinates[ia], t.coordinates[ib]) {
+		if !pointEquals(t.coordinates[ia], t.coordinates[ib]) {
 			return false
 		}
 		ia += 1
@@ -120,7 +120,7 @@ func (t *Topology) lineEqual(a, b *Arc) bool {
 	return true
 }
 
-func (t *Topology) lineEqualReverse(a, b *Arc) bool {
+func (t *Topology) lineEqualReverse(a, b *arc) bool {
 	ia := a.Start
 	ib := b.Start
 	ja := a.End
@@ -130,7 +130,7 @@ func (t *Topology) lineEqualReverse(a, b *Arc) bool {
 	}
 
 	for ia <= ja {
-		if !PointEquals(t.coordinates[ia], t.coordinates[jb]) {
+		if !pointEquals(t.coordinates[ia], t.coordinates[jb]) {
 			return false
 		}
 		ia += 1
@@ -140,7 +140,7 @@ func (t *Topology) lineEqualReverse(a, b *Arc) bool {
 	return true
 }
 
-func (t *Topology) ringEqual(a, b *Arc) bool {
+func (t *Topology) ringEqual(a, b *arc) bool {
 	ia := a.Start
 	ib := b.Start
 	ja := a.End
@@ -156,7 +156,7 @@ func (t *Topology) ringEqual(a, b *Arc) bool {
 	for i := 0; i < n; i++ {
 		pa := t.coordinates[ia+(i+ka)%n]
 		pb := t.coordinates[ib+(i+kb)%n]
-		if !PointEquals(pa, pb) {
+		if !pointEquals(pa, pb) {
 			return false
 		}
 	}
@@ -164,7 +164,7 @@ func (t *Topology) ringEqual(a, b *Arc) bool {
 	return true
 }
 
-func (t *Topology) ringEqualReverse(a, b *Arc) bool {
+func (t *Topology) ringEqualReverse(a, b *arc) bool {
 	ia := a.Start
 	ib := b.Start
 	ja := a.End
@@ -180,7 +180,7 @@ func (t *Topology) ringEqualReverse(a, b *Arc) bool {
 	for i := 0; i < n; i++ {
 		pa := t.coordinates[ia+(i+ka)%n]
 		pb := t.coordinates[jb-(i+kb)%n]
-		if !PointEquals(pa, pb) {
+		if !pointEquals(pa, pb) {
 			return false
 		}
 	}
@@ -190,7 +190,7 @@ func (t *Topology) ringEqualReverse(a, b *Arc) bool {
 
 // Rings are rotated to a consistent, but arbitrary, start point.
 // This is necessary to detect when a ring and a rotated copy are dupes.
-func (t *Topology) findMinimumOffset(arc *Arc) int {
+func (t *Topology) findMinimumOffset(arc *arc) int {
 	start := arc.Start
 	end := arc.End
 	mid := start

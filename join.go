@@ -1,9 +1,9 @@
 package topojson
 
-type junctionMap map[Point]bool
+type junctionMap map[point]bool
 
 func (j junctionMap) Has(c []float64) bool {
-	_, ok := j[Point{c[0], c[1]}]
+	_, ok := j[point{c[0], c[1]}]
 	return ok
 }
 
@@ -17,9 +17,9 @@ func (t *Topology) join() junctionMap {
 
 	junctionCount := 0
 
-	indexByPoint := make(map[Point]int)
+	indexByPoint := make(map[point]int)
 	for i, c := range t.coordinates {
-		p := Point{c[0], c[1]}
+		p := point{c[0], c[1]}
 		if v, ok := indexByPoint[p]; !ok {
 			indexByPoint[p] = i
 			indexes[i] = i
@@ -107,7 +107,7 @@ func (t *Topology) join() junctionMap {
 	for k, v := range junctions {
 		if v {
 			c := t.coordinates[k]
-			result[Point{c[0], c[1]}] = true
+			result[point{c[0], c[1]}] = true
 		}
 	}
 	return result
