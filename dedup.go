@@ -3,6 +3,8 @@ package topojson
 func (t *Topology) dedup() {
 	arcsByEnd := make(map[point][]*arc)
 
+	t.arcs = make([]*arc, 0)
+
 	dedupLine := func(arc *arc) {
 		// Does this arc match an existing arc in order?
 		startPoint := newPoint(t.coordinates[arc.Start])
@@ -32,6 +34,7 @@ func (t *Topology) dedup() {
 
 		arcsByEnd[startPoint] = append(startArcs, arc)
 		arcsByEnd[endPoint] = append(endArcs, arc)
+		t.arcs = append(t.arcs, arc)
 	}
 
 	dedupRing := func(arc *arc) {
@@ -75,6 +78,7 @@ func (t *Topology) dedup() {
 		}
 
 		arcsByEnd[endPoint] = append(endArcs, arc)
+		t.arcs = append(t.arcs, arc)
 	}
 
 	for _, line := range t.lines {

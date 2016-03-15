@@ -4,25 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-)
 
-// A GeometryType serves to enumerate the different TopoJSON geometry types.
-type GeometryType string
-
-// The geometry types supported by TopoJSON 1.0
-const (
-	GeometryPoint           GeometryType = "Point"
-	GeometryMultiPoint      GeometryType = "MultiPoint"
-	GeometryLineString      GeometryType = "LineString"
-	GeometryMultiLineString GeometryType = "MultiLineString"
-	GeometryPolygon         GeometryType = "Polygon"
-	GeometryMultiPolygon    GeometryType = "MultiPolygon"
-	GeometryCollection      GeometryType = "GeometryCollection"
+	"github.com/paulmach/go.geojson"
 )
 
 type Geometry struct {
 	ID         string                 `json:"id,omitempty"`
-	Type       GeometryType           `json:"type"`
+	Type       geojson.GeometryType   `json:"type"`
 	Properties map[string]interface{} `json:"properties"`
 
 	Point           []float64
@@ -40,7 +28,7 @@ func (g *Geometry) MarshalJSON() ([]byte, error) {
 	// defining a struct here lets us define the order of the JSON elements.
 	type geometry struct {
 		ID          string                 `json:"id,omitempty"`
-		Type        GeometryType           `json:"type"`
+		Type        geojson.GeometryType   `json:"type"`
 		Properties  map[string]interface{} `json:"properties"`
 		Coordinates interface{}            `json:"coordinates,omitempty"`
 		Arcs        interface{}            `json:"arcs,omitempty"`
@@ -54,19 +42,19 @@ func (g *Geometry) MarshalJSON() ([]byte, error) {
 	}
 
 	switch g.Type {
-	case GeometryPoint:
+	case geojson.GeometryPoint:
 		geo.Coordinates = g.Point
-	case GeometryMultiPoint:
+	case geojson.GeometryMultiPoint:
 		geo.Coordinates = g.MultiPoint
-	case GeometryLineString:
+	case geojson.GeometryLineString:
 		geo.Arcs = g.LineString
-	case GeometryMultiLineString:
+	case geojson.GeometryMultiLineString:
 		geo.Arcs = g.MultiLineString
-	case GeometryPolygon:
+	case geojson.GeometryPolygon:
 		geo.Arcs = g.Polygon
-	case GeometryMultiPolygon:
+	case geojson.GeometryMultiPolygon:
 		geo.Arcs = g.MultiPolygon
-	case GeometryCollection:
+	case geojson.GeometryCollection:
 		geo.Geometries = g.Geometries
 	}
 
@@ -92,26 +80,26 @@ func decodeGeometry(g *Geometry, object map[string]interface{}) error {
 	}
 
 	if s, ok := t.(string); ok {
-		g.Type = GeometryType(s)
+		g.Type = geojson.GeometryType(s)
 	} else {
 		return errors.New("type property not string")
 	}
 
 	var err error
 	switch g.Type {
-	case GeometryPoint:
+	case geojson.GeometryPoint:
 		g.Point, err = decodePosition(object["coordinates"])
-	case GeometryMultiPoint:
+	case geojson.GeometryMultiPoint:
 		g.MultiPoint, err = decodePositionSet(object["coordinates"])
-	case GeometryLineString:
+	case geojson.GeometryLineString:
 		g.LineString, err = decodeArcs(object["arcs"])
-	case GeometryMultiLineString:
+	case geojson.GeometryMultiLineString:
 		g.MultiLineString, err = decodeArcsSet(object["arcs"])
-	case GeometryPolygon:
+	case geojson.GeometryPolygon:
 		g.Polygon, err = decodeArcsSet(object["arcs"])
-	case GeometryMultiPolygon:
+	case geojson.GeometryMultiPolygon:
 		g.MultiPolygon, err = decodePolygonArcs(object["arcs"])
-	case GeometryCollection:
+	case geojson.GeometryCollection:
 		g.Geometries, err = decodeGeometries(object["geometries"])
 	}
 

@@ -25,6 +25,8 @@ func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
 		o.ID = id
 	}
 
+	o.Properties = f.Properties
+
 	return o
 }
 

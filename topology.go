@@ -21,6 +21,7 @@ type Topology struct {
 	objects     []*topologyObject
 	lines       []*arc
 	rings       []*arc
+	arcs        []*arc
 }
 
 type Transform struct {
@@ -39,7 +40,7 @@ type TopologyOptions struct {
 	IDProperty string
 }
 
-func NewTopology(features *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
+func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
 	if opts == nil {
 		opts = &TopologyOptions{
 			Quantize:   -1,
@@ -49,7 +50,7 @@ func NewTopology(features *geojson.FeatureCollection, opts *TopologyOptions) *To
 	}
 
 	topo := &Topology{
-		input: nil, // TODO
+		input: fc.Features,
 		opts:  opts,
 	}
 
@@ -57,6 +58,7 @@ func NewTopology(features *geojson.FeatureCollection, opts *TopologyOptions) *To
 	topo.join()
 	topo.cut()
 	topo.dedup()
+	topo.unpack()
 
 	topo.input = nil
 
@@ -96,11 +98,14 @@ func pointEquals(a, b []float64) bool {
 }
 
 type topologyObject struct {
-	ID   string
-	Type geojson.GeometryType
+	ID         string
+	Type       geojson.GeometryType
+	Properties map[string]interface{}
 
 	Geometries []*topologyObject // For geometry collections
 	Arc        *arc              // For lines
 	Arcs       []*arc            // For multi lines and polygons
 	MultiArcs  [][]*arc          // For multi polygons
 }
+
+// TODO: Verify that point and MultiPoint pass through
