@@ -23,8 +23,8 @@ func TestCutDuplicates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -53,8 +53,8 @@ func TestCutReversedDuplicates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -87,8 +87,8 @@ func TestCutDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -123,8 +123,8 @@ func TestCutReversedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -159,8 +159,8 @@ func TestCutRotatedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -193,8 +193,8 @@ func TestCutRingLine(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcaLine"]
@@ -226,8 +226,8 @@ func TestCutRingLineReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcaLine"]
@@ -259,8 +259,8 @@ func TestCutRingLineReversed2(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["bcabLine"]
@@ -290,8 +290,8 @@ func TestCutOldArcExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -322,8 +322,8 @@ func TestCutReversedOldArcExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["cba"]
@@ -354,8 +354,8 @@ func TestCutNewArcSharesStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["ade"]
@@ -383,8 +383,8 @@ func TestCutRingNoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["aba"]
@@ -407,8 +407,8 @@ func TestCutRingAANoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["aa"]
@@ -431,8 +431,8 @@ func TestCutRingANoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["a"]
@@ -456,8 +456,8 @@ func TestCutNewLineSharesEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -486,8 +486,8 @@ func TestCutNewLineExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["ab"]
@@ -518,8 +518,8 @@ func TestCutNewLineExtendsReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["ba"]
@@ -550,8 +550,8 @@ func TestCutNewStartsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -582,8 +582,8 @@ func TestCutNewStartsMiddleReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["cba"]
@@ -614,8 +614,8 @@ func TestCutNewLineDeviates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -648,8 +648,8 @@ func TestCutNewLineDeviatesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["cba"]
@@ -682,8 +682,8 @@ func TestCutNewLineMerges(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -716,8 +716,8 @@ func TestCutNewLineMergesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["cba"]
@@ -750,8 +750,8 @@ func TestCutNewLineSharesMidpoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abc"]
@@ -784,8 +784,8 @@ func TestCutNewLineSkipsPoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcde"]
@@ -824,8 +824,8 @@ func TestCutNewLineSkipsPointReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["edcba"]
@@ -861,8 +861,8 @@ func TestCutSelfIntersectsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcdbe"]
@@ -882,8 +882,8 @@ func TestCutSelfIntersectsStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abacd"]
@@ -905,8 +905,8 @@ func TestCutSelfIntersectsEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcdbd"]
@@ -931,8 +931,8 @@ func TestCutSelfIntersectsShares(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcdbe"]
@@ -965,8 +965,8 @@ func TestCutLineClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -988,8 +988,8 @@ func TestCutRingClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1017,8 +1017,8 @@ func TestCutDuplicateRingsShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1053,8 +1053,8 @@ func TestCutDuplicateRingsReversedShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1089,8 +1089,8 @@ func TestCutCoincidentRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1125,8 +1125,8 @@ func TestCutCoincidentRings2(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1166,8 +1166,8 @@ func TestCutCoincidentRings3(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcda"]
@@ -1211,8 +1211,8 @@ func TestCutNoCutsButRotated(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abca"]
@@ -1254,8 +1254,8 @@ func TestCutOverlapping(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 
 	o1 := topo.objects["abcda"]

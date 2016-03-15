@@ -28,8 +28,8 @@ func TestCopiesCoordinates(t *testing.T) {
 		{0, 0}, {1, 0}, {2, 0},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	is.Equal(len(topo.coordinates), len(expected))
 	for k, v := range topo.coordinates {
 		is.Equal(v, expected[k])
@@ -50,8 +50,8 @@ func TestClosingCoordinates(t *testing.T) {
 		{0, 0}, {1, 0}, {2, 0}, {0, 0},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	is.Equal(len(topo.coordinates), len(expected))
 	for k, v := range topo.coordinates {
 		is.Equal(v, expected[k])
@@ -71,8 +71,8 @@ func TestLineSlices(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 
 	foo := topo.objects["foo"]
 	is.Equal(foo.Type, geojson.GeometryLineString)
@@ -101,8 +101,8 @@ func TestExtractRingsOrder(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 
 	is.True(reflect.DeepEqual(topo.lines, []*Arc{
 		{Start: 0, End: 2},
@@ -123,8 +123,8 @@ func TestExtractNested(t *testing.T) {
 		})))},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 
 	foo := topo.objects["foo"]
 	is.Equal(foo.Type, geojson.GeometryCollection)

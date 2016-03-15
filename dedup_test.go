@@ -23,8 +23,8 @@ func TestDedupDuplicates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -54,8 +54,8 @@ func TestDedupReversedDuplicates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -89,8 +89,8 @@ func TestDedupDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -126,8 +126,8 @@ func TestDedupReversedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -163,8 +163,8 @@ func TestDedupRotatedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -198,8 +198,8 @@ func TestDedupRingLine(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -232,8 +232,8 @@ func TestDedupRingLineReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -270,8 +270,8 @@ func TestDedupRingLineReversed2(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -302,8 +302,8 @@ func TestDedupOldArcExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -335,8 +335,8 @@ func TestDedupReversedOldArcExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -368,8 +368,8 @@ func TestDedupNewArcSharesStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -398,8 +398,8 @@ func TestDedupRingNoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -423,8 +423,8 @@ func TestDedupRingAANoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -448,8 +448,8 @@ func TestDedupRingANoCuts(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -474,8 +474,8 @@ func TestDedupNewLineSharesEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -505,8 +505,8 @@ func TestDedupNewLineExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -538,8 +538,8 @@ func TestDedupNewLineExtendsReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -571,8 +571,8 @@ func TestDedupNewStartsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -604,8 +604,8 @@ func TestDedupNewStartsMiddleReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -637,8 +637,8 @@ func TestDedupNewLineDeviates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -672,8 +672,8 @@ func TestDedupNewLineDeviatesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -707,8 +707,8 @@ func TestDedupNewLineMerges(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -742,8 +742,8 @@ func TestDedupNewLineMergesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -777,8 +777,8 @@ func TestDedupNewLineSharesMidpoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -812,8 +812,8 @@ func TestDedupNewLineSkipsPoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -853,8 +853,8 @@ func TestDedupNewLineSkipsPointReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -891,8 +891,8 @@ func TestDedupSelfIntersectsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -913,8 +913,8 @@ func TestDedupSelfIntersectsStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -937,8 +937,8 @@ func TestDedupSelfIntersectsEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -964,8 +964,8 @@ func TestDedupSelfIntersectsShares(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -999,8 +999,8 @@ func TestDedupLineClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1023,8 +1023,8 @@ func TestDedupRingClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1053,8 +1053,8 @@ func TestDedupDuplicateRingsShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1090,8 +1090,8 @@ func TestDedupDuplicateRingsReversedShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1127,8 +1127,8 @@ func TestDedupCoincidentRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1164,8 +1164,8 @@ func TestDedupCoincidentRings2(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1206,8 +1206,8 @@ func TestDedupCoincidentRings3(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1252,8 +1252,8 @@ func TestDedupNoCutsButRotated(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 
@@ -1296,8 +1296,8 @@ func TestDedupOverlapping(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	topo.cut()
 	topo.dedup()
 

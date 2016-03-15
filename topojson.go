@@ -3,6 +3,7 @@ package topojson
 import "github.com/paulmach/go.geojson"
 
 type Topology struct {
+	input       []*inputGeometry
 	coordinates [][]float64
 	objects     map[string]*topologyObject
 	lines       []*Arc
@@ -23,6 +24,11 @@ func NewPoint(coords []float64) Point {
 
 func PointEquals(a, b []float64) bool {
 	return a[0] == b[0] && a[1] == b[1]
+}
+
+type inputGeometry struct {
+	id   string
+	geom *geojson.Geometry
 }
 
 type topologyObject struct {

@@ -2,17 +2,13 @@ package topojson
 
 import "github.com/paulmach/go.geojson"
 
-type inputGeometry struct {
-	id   string
-	geom *geojson.Geometry
-}
-
-func (t *Topology) extract(in []*inputGeometry) {
+func (t *Topology) extract() {
 	t.objects = make(map[string]*topologyObject)
 
-	for _, g := range in {
+	for _, g := range t.input {
 		t.objects[g.id] = t.extractGeometry(g.geom)
 	}
+	t.input = nil // no longer needed
 }
 
 func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {

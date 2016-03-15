@@ -22,8 +22,8 @@ func TestHasJunctions(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.True(junctions.Has([]float64{2, 0}))
@@ -43,8 +43,8 @@ func TestNonJunctions(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.False(junctions.Has([]float64{1, 0}))
@@ -63,8 +63,8 @@ func TestJoinDuplicate(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 2)
@@ -85,8 +85,8 @@ func TestJoinReversedDuplicate(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 2)
@@ -111,8 +111,8 @@ func TestJoinDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -135,8 +135,8 @@ func TestJoinReversedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -159,8 +159,8 @@ func TestJoinRotatedDuplicateRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -181,8 +181,8 @@ func TestJoinRingLine(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 1)
@@ -204,8 +204,8 @@ func TestJoinLineRingReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 1)
@@ -227,8 +227,8 @@ func TestJoinRingLineReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 1)
@@ -248,8 +248,8 @@ func TestJoinOldArcExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -271,8 +271,8 @@ func TestJoinOldArcExtendsReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -294,8 +294,8 @@ func TestJoinNewArcSharesStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -316,8 +316,8 @@ func TestJoinRingNoJunctions(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -335,8 +335,8 @@ func TestJoinRingAANoJunctions(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -354,8 +354,8 @@ func TestJoinRingANoJunctions(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -374,8 +374,8 @@ func TestJoinNewLineSharesEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -397,8 +397,8 @@ func TestJoinNewLineExtends(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -420,8 +420,8 @@ func TestJoinNewLineExtendsReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -443,8 +443,8 @@ func TestJoinNewStartsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -466,8 +466,8 @@ func TestJoinNewStartsMiddleReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
@@ -489,8 +489,8 @@ func TestJoinNewLineDeviates(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -513,8 +513,8 @@ func TestJoinNewLineDeviatesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -537,8 +537,8 @@ func TestJoinNewLineMerges(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -561,8 +561,8 @@ func TestJoinNewLineMergesReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -585,8 +585,8 @@ func TestJoinNewLineSharesMidpoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 5)
@@ -610,8 +610,8 @@ func TestJoinNewLineSkipsPoint(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -634,8 +634,8 @@ func TestJoinNewLineSkipsPointReversed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 4)
@@ -655,8 +655,8 @@ func TestJoinSelfIntersectsMiddle(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 2)
@@ -674,8 +674,8 @@ func TestJoinSelfIntersectsStart(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 2)
@@ -693,8 +693,8 @@ func TestJoinSelfIntersectsEnd(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 2)
@@ -715,8 +715,8 @@ func TestJoinSelfIntersectsShares(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 5)
@@ -737,8 +737,8 @@ func TestJoinLineClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 1)
@@ -757,8 +757,8 @@ func TestJoinRingClosed(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -781,8 +781,8 @@ func TestJoinDuplicateRingsShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -805,8 +805,8 @@ func TestJoinDuplicateRingsReversedShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -829,8 +829,8 @@ func TestJoinCoincidentRings(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -853,8 +853,8 @@ func TestJoinCoincidentRings2(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 0)
@@ -877,8 +877,8 @@ func TestJoinCoincidentRingsShare(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 1)
@@ -900,8 +900,8 @@ func TestJoinCoincidentRingLine(t *testing.T) {
 		})},
 	}
 
-	topo := &Topology{}
-	topo.extract(in)
+	topo := &Topology{input: in}
+	topo.extract()
 	junctions := topo.join()
 
 	is.Equal(len(junctions), 3)
