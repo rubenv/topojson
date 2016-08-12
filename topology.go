@@ -22,6 +22,9 @@ type Topology struct {
 	lines       []*arc
 	rings       []*arc
 	arcs        []*arc
+	arcIndexes  map[arcEntry]int
+	deletedArcs map[int]bool
+	shiftArcs   map[int]int
 }
 
 type Transform struct {
@@ -33,6 +36,9 @@ type TopologyOptions struct {
 	// Quantization precision, in number of digits, set to -1 to skip
 	Quantize int
 
+	// Maximum simplification error, set to 0 to disable
+	Simplify float64
+
 	// ID property key
 	IDProperty string
 }
@@ -41,6 +47,7 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	if opts == nil {
 		opts = &TopologyOptions{
 			Quantize:   -1,
+			Simplify:   0,
 			IDProperty: "id",
 		}
 	}
@@ -54,7 +61,13 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	topo.join()
 	topo.cut()
 	topo.dedup()
-	topo.unpack()
+	topo.unpackArcs()
+	topo.simplify()
+	topo.unpackObjects()
+	topo.removeEmpty()
+
+	// No longer needed
+	topo.opts = nil
 
 	return topo
 }
