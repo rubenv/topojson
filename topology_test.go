@@ -22,7 +22,6 @@ func TestTopology(t *testing.T) {
 
 	topo := NewTopology(fc, &TopologyOptions{
 		Quantize: -1,
-		Simplify: 0,
 	})
 	is.NotNil(topo)
 	is.Equal(len(topo.Objects), 1)

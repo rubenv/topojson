@@ -33,9 +33,6 @@ type TopologyOptions struct {
 	// Quantization precision, in number of digits, set to -1 to skip
 	Quantize int
 
-	// Simplification precision, set to 0 to skip
-	Simplify float64
-
 	// ID property key
 	IDProperty string
 }
@@ -44,7 +41,6 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	if opts == nil {
 		opts = &TopologyOptions{
 			Quantize:   -1,
-			Simplify:   0,
 			IDProperty: "id",
 		}
 	}
