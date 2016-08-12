@@ -31,7 +31,6 @@ func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
 }
 
 func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
-
 	o := &topologyObject{
 		Type: g.Type,
 	}
@@ -52,6 +51,15 @@ func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 		o.Arcs = make([]*arc, len(g.Polygon))
 		for i, r := range g.Polygon {
 			o.Arcs[i] = t.extractRing(r)
+		}
+	case geojson.GeometryMultiPolygon:
+		o.MultiArcs = make([][]*arc, len(g.MultiPolygon))
+		for i, p := range g.MultiPolygon {
+			arcs := make([]*arc, len(p))
+			for j, r := range p {
+				arcs[j] = t.extractRing(r)
+			}
+			o.MultiArcs[i] = arcs
 		}
 	}
 

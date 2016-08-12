@@ -56,8 +56,6 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	topo.dedup()
 	topo.unpack()
 
-	topo.input = nil
-
 	return topo
 }
 
