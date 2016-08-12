@@ -54,7 +54,7 @@ func (t *Topology) lookupArc(a *arc) []int {
 		} else {
 			index := t.arcIndexes[arcEntry{a.End, a.Start}]
 			if !t.deletedArcs[index] {
-				result = append(result, -index+t.shiftArcs[index])
+				result = append(result, ^(index - t.shiftArcs[index]))
 			}
 		}
 		a = a.Next
