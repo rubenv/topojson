@@ -24,7 +24,7 @@ func (t *Topology) simplify() {
 		points := path.Points()
 		newArc := make([][]float64, len(points))
 		for j, p := range points {
-			newArc[j] = []float64{p[0], p[1]}
+			newArc[j] = []float64{p[1], p[0]}
 		}
 
 		if i == 0 {
