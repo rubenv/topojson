@@ -20,9 +20,7 @@ func TestTopology(t *testing.T) {
 	fc := geojson.NewFeatureCollection()
 	fc.AddFeature(poly)
 
-	topo := NewTopology(fc, &TopologyOptions{
-		Quantize: -1,
-	})
+	topo := NewTopology(fc, nil)
 	is.NotNil(topo)
 	is.Equal(len(topo.Objects), 1)
 	is.Equal(len(topo.Arcs), 1)

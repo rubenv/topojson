@@ -33,8 +33,11 @@ type Transform struct {
 }
 
 type TopologyOptions struct {
-	// Quantization precision, in number of digits, set to -1 to skip
-	Quantize int
+	// Pre-quantization precision
+	PreQuantize float64
+
+	// Post-quantization precision
+	PostQuantize float64
 
 	// Maximum simplification error, set to 0 to disable
 	Simplify float64
@@ -46,9 +49,10 @@ type TopologyOptions struct {
 func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
 	if opts == nil {
 		opts = &TopologyOptions{
-			Quantize:   -1,
-			Simplify:   0,
-			IDProperty: "id",
+			PreQuantize:  0,
+			PostQuantize: 0,
+			Simplify:     0,
+			IDProperty:   "id",
 		}
 	}
 
@@ -57,6 +61,8 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 		opts:  opts,
 	}
 
+	topo.bounds()
+	topo.preQuantize()
 	topo.extract()
 	topo.join()
 	topo.cut()
@@ -101,7 +107,7 @@ func newPoint(coords []float64) point {
 }
 
 func pointEquals(a, b []float64) bool {
-	return a[0] == b[0] && a[1] == b[1]
+	return a != nil && b != nil && a[0] == b[0] && a[1] == b[1]
 }
 
 type topologyObject struct {
