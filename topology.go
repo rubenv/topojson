@@ -71,6 +71,7 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	topo.simplify()
 	topo.unpackObjects()
 	topo.removeEmpty()
+	topo.postQuantize()
 
 	// No longer needed
 	topo.opts = nil
