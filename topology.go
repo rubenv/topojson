@@ -10,9 +10,9 @@ type Topology struct {
 	Type      string     `json:"type"`
 	Transform *Transform `json:"transform,omitempty"`
 
-	BoundingBox []float64     `json:"bbox,omitempty"`
-	Objects     []*Geometry   `json:"objects"`
-	Arcs        [][][]float64 `json:"arcs"`
+	BoundingBox []float64            `json:"bbox,omitempty"`
+	Objects     map[string]*Geometry `json:"objects"`
+	Arcs        [][][]float64        `json:"arcs"`
 
 	// For internal use only
 	opts        *TopologyOptions
@@ -57,8 +57,10 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 	}
 
 	topo := &Topology{
-		input: fc.Features,
-		opts:  opts,
+		Type:    "Topology",
+		input:   fc.Features,
+		opts:    opts,
+		Objects: make(map[string]*Geometry),
 	}
 
 	topo.bounds()
@@ -86,12 +88,24 @@ func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology
 func (t *Topology) MarshalJSON() ([]byte, error) {
 	t.Type = "Topology"
 	if t.Objects == nil {
-		t.Objects = make([]*Geometry, 0) // TopoJSON requires the objects attribute to be at least []
+		t.Objects = make(map[string]*Geometry) // TopoJSON requires the objects attribute to be at least {}
 	}
 	if t.Arcs == nil {
 		t.Arcs = make([][][]float64, 0) // TopoJSON requires the arcs attribute to be at least []
 	}
 	return json.Marshal(*t)
+}
+
+// UnmarshalTopology decodes the data into a TopoJSON topology.
+// Alternately one can call json.Unmarshal(topo) directly for the same result.
+func UnmarshalTopology(data []byte) (*Topology, error) {
+	topo := &Topology{}
+	err := json.Unmarshal(data, topo)
+	if err != nil {
+		return nil, err
+	}
+
+	return topo, nil
 }
 
 // Internal structs

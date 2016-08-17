@@ -3,11 +3,11 @@ package topojson
 import geojson "github.com/paulmach/go.geojson"
 
 func (t *Topology) removeEmpty() {
-	objs := make([]*Geometry, 0, len(t.Objects))
+	objs := make(map[string]*Geometry, len(t.Objects))
 	for _, o := range t.Objects {
 		obj := t.removeEmptyObjects(o)
 		if obj != nil {
-			objs = append(objs, obj)
+			objs[obj.ID] = obj
 		}
 	}
 	t.Objects = objs

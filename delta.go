@@ -11,7 +11,11 @@ func (t *Topology) delta() {
 		for j, point := range arc {
 			x1 := point[0]
 			y1 := point[1]
-			t.Arcs[i][j] = []float64{x1 - x0, y1 - y0}
+			if j == 0 {
+				t.Arcs[i][j] = []float64{x1, y1}
+			} else {
+				t.Arcs[i][j] = []float64{x1 - x0, y1 - y0}
+			}
 			x0 = x1
 			y0 = y1
 		}

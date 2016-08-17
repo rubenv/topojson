@@ -85,6 +85,14 @@ func decodeGeometry(g *Geometry, object map[string]interface{}) error {
 		return errors.New("type property not string")
 	}
 
+	if p, ok := object["properties"].(map[string]interface{}); ok {
+		g.Properties = p
+	}
+
+	if id, ok := object["id"].(string); ok {
+		g.ID = id
+	}
+
 	var err error
 	switch g.Type {
 	case geojson.GeometryPoint:
@@ -152,8 +160,10 @@ func decodeArcs(data interface{}) ([]int, error) {
 	for _, arc := range arcs {
 		if i, ok := arc.(int); ok {
 			result = append(result, i)
+		} else if i, ok := arc.(float64); ok {
+			result = append(result, int(i))
 		} else {
-			return nil, fmt.Errorf("not a valid arc index, got %v", arc)
+			return nil, fmt.Errorf("not a valid arc index, got %#v", arc)
 		}
 	}
 

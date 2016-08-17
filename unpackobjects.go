@@ -9,7 +9,8 @@ type arcEntry struct {
 
 func (t *Topology) unpackObjects() {
 	for _, o := range t.objects {
-		t.Objects = append(t.Objects, t.unpackObject(o))
+		obj := t.unpackObject(o)
+		t.Objects[obj.ID] = obj
 	}
 	t.objects = nil
 	t.deletedArcs = nil
