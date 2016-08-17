@@ -23,8 +23,8 @@ func newQuantize(dx, dy, kx, ky float64) *quantize {
 }
 
 func (q *quantize) quantizePoint(p []float64) []float64 {
-	x := math.Floor((p[0]+q.dx)*q.kx + .5)
-	y := math.Floor((p[1]+q.dy)*q.ky + .5)
+	x := round((p[0] + q.dx) * q.kx)
+	y := round((p[1] + q.dy) * q.ky)
 	return []float64{x, y}
 }
 
@@ -59,4 +59,12 @@ func (q *quantize) quantizeMultiLine(in [][][]float64, skipEqual bool) [][][]flo
 	}
 
 	return out
+}
+
+func round(v float64) float64 {
+	if v < 0 {
+		return math.Ceil(v - 0.5)
+	} else {
+		return math.Floor(v + 0.5)
+	}
 }
