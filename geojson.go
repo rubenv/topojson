@@ -1,8 +1,6 @@
 package topojson
 
-import (
-	geojson "github.com/paulmach/go.geojson"
-)
+import geojson "github.com/paulmach/go.geojson"
 
 func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
@@ -20,19 +18,19 @@ func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 func (t *Topology) toGeometry(g *Geometry) *geojson.Geometry {
 	switch g.Type {
 	case geojson.GeometryPoint:
-		return geojson.NewPointGeometry(g.Point)
+		return geojson.NewPointGeometry(t.packPoint(g.Point))
 	case geojson.GeometryMultiPoint:
-		return geojson.NewMultiPointGeometry(g.MultiPoint...)
+		return geojson.NewMultiPointGeometry(t.packPoints(g.MultiPoint)...)
 	case geojson.GeometryLineString:
-		return geojson.NewLineStringGeometry(t.packLinestring(g.LineString))
+		return geojson.NewLineStringGeometry(t.packLinestring(g.LineString, false))
 	case geojson.GeometryMultiLineString:
-		return geojson.NewMultiLineStringGeometry(t.packMultiLinestring(g.MultiLineString)...)
+		return geojson.NewMultiLineStringGeometry(t.packMultiLinestring(g.MultiLineString, false)...)
 	case geojson.GeometryPolygon:
-		return geojson.NewPolygonGeometry(t.packMultiLinestring(g.Polygon))
+		return geojson.NewPolygonGeometry(t.packMultiLinestring(g.Polygon, true))
 	case geojson.GeometryMultiPolygon:
 		polygons := make([][][][]float64, len(g.MultiPolygon))
 		for i, poly := range g.MultiPolygon {
-			polygons[i] = t.packMultiLinestring(poly)
+			polygons[i] = t.packMultiLinestring(poly, true)
 		}
 		return geojson.NewMultiPolygonGeometry(polygons...)
 	case geojson.GeometryCollection:
@@ -45,7 +43,31 @@ func (t *Topology) toGeometry(g *Geometry) *geojson.Geometry {
 	return nil
 }
 
-func (t *Topology) packLinestring(ls []int) [][]float64 {
+func (t *Topology) packPoint(in []float64) []float64 {
+	if t.Transform == nil {
+		return in
+	}
+
+	out := make([]float64, len(in))
+	for i, v := range in {
+		out[i] = v
+		if i < 2 {
+			out[i] = v*t.Transform.Scale[i] + t.Transform.Translate[i]
+		}
+	}
+
+	return out
+}
+
+func (t *Topology) packPoints(in [][]float64) [][]float64 {
+	out := make([][]float64, len(in))
+	for i, p := range in {
+		out[i] = t.packPoint(p)
+	}
+	return out
+}
+
+func (t *Topology) packLinestring(ls []int, closed bool) [][]float64 {
 	result := make([][]float64, 0)
 	for _, a := range ls {
 		reverse := false
@@ -55,21 +77,45 @@ func (t *Topology) packLinestring(ls []int) [][]float64 {
 		}
 		arc := t.Arcs[a]
 
+		newArc := append([][]float64{}, arc...)
+		if t.Transform != nil {
+			x := float64(0)
+			y := float64(0)
+
+			for k, p := range newArc {
+				x += p[0]
+				y += p[1]
+
+				newArc[k][0] = x*t.Transform.Scale[0] + t.Transform.Translate[0]
+				newArc[k][1] = y*t.Transform.Scale[1] + t.Transform.Translate[1]
+			}
+		}
+
 		if reverse {
-			for j := len(arc) - 1; j >= 0; j-- {
-				result = append(result, arc[j])
+			for j := len(newArc) - 1; j >= 0; j-- {
+				result = append(result, newArc[j])
 			}
 		} else {
-			result = append(result, arc...)
+			result = append(result, newArc...)
 		}
 	}
+
+	if closed {
+		for len(result) < 4 {
+			result = append(result, result[0])
+		}
+		if !pointEquals(result[0], result[len(result)-1]) {
+			result = append(result, result[0])
+		}
+	}
+
 	return result
 }
 
-func (t *Topology) packMultiLinestring(ls [][]int) [][][]float64 {
+func (t *Topology) packMultiLinestring(ls [][]int, closed bool) [][][]float64 {
 	result := make([][][]float64, len(ls))
 	for i, l := range ls {
-		result[i] = t.packLinestring(l)
+		result[i] = t.packLinestring(l, closed)
 	}
 	return result
 }
