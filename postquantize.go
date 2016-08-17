@@ -39,7 +39,7 @@ func (t *Topology) postQuantize() {
 			ky = (q1 - 1) / (y1 - y0)
 		}
 
-		q := newQuantize(-x0, -y0, kx, ky)
+		q = newQuantize(-x0, -y0, kx, ky)
 		t.Transform = q.Transform
 	}
 
