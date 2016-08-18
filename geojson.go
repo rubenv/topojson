@@ -77,7 +77,12 @@ func (t *Topology) packLinestring(ls []int, closed bool) [][]float64 {
 		}
 		arc := t.Arcs[a]
 
-		newArc := append([][]float64{}, arc...)
+		// Copy arc
+		newArc := make([][]float64, len(arc))
+		for i, point := range arc {
+			newArc[i] = append([]float64{}, point...)
+		}
+
 		if t.Transform != nil {
 			x := float64(0)
 			y := float64(0)
