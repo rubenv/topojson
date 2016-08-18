@@ -109,9 +109,6 @@ func (t *Topology) packLinestring(ls []int, closed bool) [][]float64 {
 		for len(result) < 4 {
 			result = append(result, result[0])
 		}
-		if !pointEquals(result[0], result[len(result)-1]) {
-			result = append(result, result[0])
-		}
 	}
 
 	return result
