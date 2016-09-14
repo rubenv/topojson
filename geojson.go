@@ -22,15 +22,15 @@ func (t *Topology) toGeometry(g *Geometry) *geojson.Geometry {
 	case geojson.GeometryMultiPoint:
 		return geojson.NewMultiPointGeometry(t.packPoints(g.MultiPoint)...)
 	case geojson.GeometryLineString:
-		return geojson.NewLineStringGeometry(t.packLinestring(g.LineString, false))
+		return geojson.NewLineStringGeometry(t.packLinestring(g.LineString))
 	case geojson.GeometryMultiLineString:
-		return geojson.NewMultiLineStringGeometry(t.packMultiLinestring(g.MultiLineString, false)...)
+		return geojson.NewMultiLineStringGeometry(t.packMultiLinestring(g.MultiLineString)...)
 	case geojson.GeometryPolygon:
-		return geojson.NewPolygonGeometry(t.packMultiLinestring(g.Polygon, true))
+		return geojson.NewPolygonGeometry(t.packMultiLinestring(g.Polygon))
 	case geojson.GeometryMultiPolygon:
 		polygons := make([][][][]float64, len(g.MultiPolygon))
 		for i, poly := range g.MultiPolygon {
-			polygons[i] = t.packMultiLinestring(poly, true)
+			polygons[i] = t.packMultiLinestring(poly)
 		}
 		return geojson.NewMultiPolygonGeometry(polygons...)
 	case geojson.GeometryCollection:
@@ -67,7 +67,7 @@ func (t *Topology) packPoints(in [][]float64) [][]float64 {
 	return out
 }
 
-func (t *Topology) packLinestring(ls []int, closed bool) [][]float64 {
+func (t *Topology) packLinestring(ls []int) [][]float64 {
 	result := make([][]float64, 0)
 	for _, a := range ls {
 		reverse := false
@@ -105,19 +105,13 @@ func (t *Topology) packLinestring(ls []int, closed bool) [][]float64 {
 		}
 	}
 
-	if closed {
-		for len(result) < 4 {
-			result = append(result, result[0])
-		}
-	}
-
 	return result
 }
 
-func (t *Topology) packMultiLinestring(ls [][]int, closed bool) [][][]float64 {
+func (t *Topology) packMultiLinestring(ls [][]int) [][][]float64 {
 	result := make([][][]float64, len(ls))
 	for i, l := range ls {
-		result[i] = t.packLinestring(l, closed)
+		result[i] = t.packLinestring(l)
 	}
 	return result
 }

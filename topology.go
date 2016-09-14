@@ -123,7 +123,7 @@ func newPoint(coords []float64) point {
 }
 
 func pointEquals(a, b []float64) bool {
-	return a != nil && b != nil && a[0] == b[0] && a[1] == b[1]
+	return a != nil && b != nil && len(a) == len(b) && a[0] == b[0] && a[1] == b[1]
 }
 
 type topologyObject struct {

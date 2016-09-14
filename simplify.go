@@ -33,7 +33,8 @@ func (t *Topology) simplify() {
 			t.shiftArcs[i] = t.shiftArcs[i-1]
 		}
 
-		if len(newArc) == 2 && pointEquals(newArc[0], newArc[1]) {
+		remove := len(newArc) <= 2 && pointEquals(newArc[0], newArc[1])
+		if remove {
 			// Zero-length arc, remove it!
 			t.deletedArcs[i] = true
 			t.shiftArcs[i] += 1
