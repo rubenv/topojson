@@ -48,12 +48,11 @@ type TopologyOptions struct {
 
 func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
 	if opts == nil {
-		opts = &TopologyOptions{
-			PreQuantize:  0,
-			PostQuantize: 0,
-			Simplify:     0,
-			IDProperty:   "id",
-		}
+		opts = &TopologyOptions{}
+	}
+
+	if opts.IDProperty == "" {
+		opts.IDProperty = "id"
 	}
 
 	topo := &Topology{
