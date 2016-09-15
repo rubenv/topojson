@@ -41,7 +41,14 @@ func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 		if len(linestrings) == 0 {
 			return nil
 		}
-		obj.MultiLineString = linestrings
+
+		if len(linestrings) == 1 {
+			obj.LineString = linestrings[0]
+			obj.MultiLineString = nil
+			obj.Type = geojson.GeometryLineString
+		} else {
+			obj.MultiLineString = linestrings
+		}
 	case geojson.GeometryPolygon:
 		rings := t.removeEmptyPolygon(obj.Polygon)
 		if rings == nil {
@@ -59,7 +66,13 @@ func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 		if len(polygons) == 0 {
 			return nil
 		}
-		obj.MultiPolygon = polygons
+		if len(polygons) == 1 {
+			obj.Polygon = polygons[0]
+			obj.MultiPolygon = nil
+			obj.Type = geojson.GeometryPolygon
+		} else {
+			obj.MultiPolygon = polygons
+		}
 	}
 
 	return obj
