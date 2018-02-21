@@ -134,6 +134,6 @@ type topologyObject struct {
 	Arc        *arc              // For lines
 	Arcs       []*arc            // For multi lines and polygons
 	MultiArcs  [][]*arc          // For multi polygons
+	Point	   []float64		 // for points
+	MultiPoint [][]float64		 // for multi points
 }
-
-// TODO: Verify that point and MultiPoint pass through

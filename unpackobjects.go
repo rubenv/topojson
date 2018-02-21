@@ -38,6 +38,10 @@ func (t *Topology) unpackObject(o *topologyObject) *Geometry {
 		obj.Polygon = t.lookupArcs(o.Arcs)
 	case geojson.GeometryMultiPolygon:
 		obj.MultiPolygon = t.lookupMultiArcs(o.MultiArcs)
+	case geojson.GeometryPoint:
+		obj.Point = o.Point
+	case geojson.GeometryMultiPoint:
+		obj.MultiPoint = o.MultiPoint
 	}
 
 	return obj

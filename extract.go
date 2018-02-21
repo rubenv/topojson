@@ -61,6 +61,10 @@ func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 			}
 			o.MultiArcs[i] = arcs
 		}
+	case geojson.GeometryPoint:
+		o.Point = g.Point
+	case geojson.GeometryMultiPoint:
+		o.MultiPoint = g.MultiPoint
 	}
 
 	return o
