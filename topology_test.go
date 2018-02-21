@@ -46,3 +46,23 @@ func TestFull(t *testing.T) {
 	is.NoErr(err)
 	is.Equal(topo, expected)
 }
+
+// https://github.com/rubenv/topojson/issues/2
+func TestMultiFeatures(t *testing.T) {
+	is := is.New(t)
+
+	fc := geojson.NewFeatureCollection()
+	f1 := geojson.NewPolygonFeature([][][]float64{
+		{{0, 0}, {1, 1}, {2, 0}, {1, -1}, {0, 0}},
+		{{0.25, 0}, {0.75, -0.25}, {0.75, 0.25}, {0.25, 0}},
+	})
+	fc.AddFeature(f1)
+	f2 := geojson.NewPolygonFeature([][][]float64{
+		{{0, 0}, {1, 1}, {2, 0}, {1, 2}, {0, 0}},
+	})
+	fc.AddFeature(f2)
+
+	topo := NewTopology(fc, nil)
+
+	is.Equal(len(topo.Objects), len(fc.Features))
+}

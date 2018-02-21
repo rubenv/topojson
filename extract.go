@@ -1,12 +1,20 @@
 package topojson
 
-import "github.com/paulmach/go.geojson"
+import (
+	"github.com/paulmach/go.geojson"
+	"fmt"
+)
 
 func (t *Topology) extract() {
 	t.objects = make([]*topologyObject, 0, len(t.input))
 
-	for _, g := range t.input {
-		t.objects = append(t.objects, t.extractFeature(g))
+	for i, g := range t.input {
+		feature := t.extractFeature(g)
+		if len(feature.ID) == 0 {
+			// if multiple features exist without ids only one will be retained, so provide a synthetic id
+			feature.ID = fmt.Sprintf("feature_%d", i)
+		}
+		t.objects = append(t.objects, feature)
 	}
 	t.input = nil // no longer needed
 }
