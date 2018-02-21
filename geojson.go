@@ -6,10 +6,20 @@ func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
 
 	for _, obj := range t.Objects {
-		feat := geojson.NewFeature(t.toGeometry(obj))
-		feat.ID = obj.ID
-		feat.Properties = obj.Properties
-		fc.AddFeature(feat)
+		switch obj.Type {
+		case geojson.GeometryCollection:
+			for _, geometry := range obj.Geometries {
+				feat := geojson.NewFeature(t.toGeometry(geometry))
+				feat.ID = geometry.ID
+				feat.Properties = geometry.Properties
+				fc.AddFeature(feat)
+			}
+		default:
+			feat := geojson.NewFeature(t.toGeometry(obj))
+			feat.ID = obj.ID
+			feat.Properties = obj.Properties
+			fc.AddFeature(feat)
+		}
 	}
 
 	return fc
