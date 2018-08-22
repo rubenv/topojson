@@ -35,7 +35,7 @@ This generates a Topology which can be encoded to JSON.
 
 ## License
 
-    Copyright (c) 2016, Ruben Vermeersch
+    Copyright (c) 2016-2018, Ruben Vermeersch
     Copyright (c) 2012-2016, Michael Bostock
     All rights reserved.
 
