@@ -1,6 +1,8 @@
 package topojson
 
-import geojson "github.com/paulmach/go.geojson"
+import (
+	geojson "github.com/paulmach/go.geojson"
+)
 
 func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 	fc := geojson.NewFeatureCollection()
@@ -108,10 +110,18 @@ func (t *Topology) packLinestring(ls []int) [][]float64 {
 
 		if reverse {
 			for j := len(newArc) - 1; j >= 0; j-- {
+				if len(result) > 0 && pointEquals(result[len(result)-1], newArc[j]) {
+					continue
+				}
 				result = append(result, newArc[j])
 			}
 		} else {
-			result = append(result, newArc...)
+			for j := 0; j < len(newArc); j++ {
+				if len(result) > 0 && pointEquals(result[len(result)-1], newArc[j]) {
+					continue
+				}
+				result = append(result, newArc[j])
+			}
 		}
 	}
 

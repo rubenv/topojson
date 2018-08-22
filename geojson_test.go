@@ -31,6 +31,36 @@ func TestGeoJSON(t *testing.T) {
 	is.Equal(fc, fc2)
 }
 
+func TestGeoJSONMultiArc(t *testing.T) {
+	is := is.New(t)
+
+	fc := geojson.NewFeatureCollection()
+	fc.AddFeature(NewTestFeature("one", geojson.NewLineStringGeometry([][]float64{
+		{0, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 0},
+	})))
+	fc.AddFeature(NewTestFeature("two", geojson.NewLineStringGeometry([][]float64{
+		{1, 0}, {2, 0}, {2, 1}, {1, 1}, {1, 0},
+	})))
+
+	topo := NewTopology(fc, nil)
+	is.NotNil(topo)
+	is.NotNil(topo)
+	is.Equal(len(topo.Objects), 2)
+
+	fc2 := topo.ToGeoJSON()
+	is.NotNil(fc2)
+
+	expected := map[string][][]float64{
+		"one": {{0, 0}, {1, 0}, {1, 1}, {0, 1}, {0, 0}},
+		"two": {{1, 0}, {2, 0}, {2, 1}, {1, 1}, {1, 0}},
+	}
+	for _, feat := range fc2.Features {
+		exp, ok := expected[feat.ID.(string)]
+		is.True(ok)
+		is.Equal(feat.Geometry.LineString, exp)
+	}
+}
+
 func TestGeoJSONWithGeometryCollections(t *testing.T) {
 	is := is.New(t)
 
@@ -53,7 +83,6 @@ func TestGeoJSONWithGeometryCollections(t *testing.T) {
 		is.Equal(len(result.Features[i].Geometry.Polygon), len(expected.Features[i].Geometry.Polygon))
 	}
 }
-
 
 var sourceTopojson = `{
 	"type":"Topology",
