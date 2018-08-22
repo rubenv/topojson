@@ -35,6 +35,7 @@ func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
 	}
 
 	o.Properties = f.Properties
+	o.BoundingBox = f.BoundingBox
 
 	return o
 }

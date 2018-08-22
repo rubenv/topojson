@@ -1,6 +1,8 @@
 package topojson
 
-import "github.com/paulmach/go.geojson"
+import (
+	"github.com/paulmach/go.geojson"
+)
 
 type arcEntry struct {
 	Start int

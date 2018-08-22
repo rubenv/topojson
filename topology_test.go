@@ -66,3 +66,19 @@ func TestMultiFeatures(t *testing.T) {
 
 	is.Equal(len(topo.Objects), len(fc.Features))
 }
+
+func TestCopyBounds(t *testing.T) {
+	is := is.New(t)
+
+	fc := geojson.NewFeatureCollection()
+	f := NewTestFeature("one", geojson.NewPolygonGeometry([][][]float64{
+		{{0, 0}, {1, 1}, {2, 0}, {1, 2}, {0, 0}},
+	}))
+	f.BoundingBox = []float64{0, 0, 2, 2}
+	fc.AddFeature(f)
+
+	topo := NewTopology(fc, nil)
+	is.NotNil(topo)
+
+	is.Equal(topo.Objects["one"].BoundingBox, []float64{0, 0, 2, 2})
+}
