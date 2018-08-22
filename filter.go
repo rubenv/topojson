@@ -43,9 +43,10 @@ func remapGeometry(arcMap map[int]int, ids []string, g *Geometry) *Geometry {
 	}
 
 	geom := &Geometry{
-		ID:         g.ID,
-		Type:       g.Type,
-		Properties: g.Properties,
+		ID:          g.ID,
+		Type:        g.Type,
+		Properties:  g.Properties,
+		BoundingBox: g.BoundingBox,
 	}
 
 	switch g.Type {
