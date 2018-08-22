@@ -4,6 +4,7 @@ import (
 	geojson "github.com/paulmach/go.geojson"
 )
 
+// Filter topology into a new topology that only contains features with the given IDs
 func (t *Topology) Filter(ids []string) *Topology {
 	result := &Topology{
 		Type:        t.Type,
