@@ -9,9 +9,10 @@ import (
 )
 
 type Geometry struct {
-	ID         string                 `json:"id,omitempty"`
-	Type       geojson.GeometryType   `json:"type"`
-	Properties map[string]interface{} `json:"properties"`
+	ID          string                 `json:"id,omitempty"`
+	Type        geojson.GeometryType   `json:"type"`
+	Properties  map[string]interface{} `json:"properties"`
+	BoundingBox []float64              `json:"bbox,omitempty"`
 
 	Point           []float64
 	MultiPoint      [][]float64

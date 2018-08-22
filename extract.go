@@ -1,8 +1,9 @@
 package topojson
 
 import (
-	"github.com/paulmach/go.geojson"
 	"fmt"
+
+	"github.com/paulmach/go.geojson"
 )
 
 func (t *Topology) extract() {
@@ -40,7 +41,8 @@ func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
 
 func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 	o := &topologyObject{
-		Type: g.Type,
+		Type:        g.Type,
+		BoundingBox: g.BoundingBox,
 	}
 
 	switch g.Type {

@@ -126,14 +126,15 @@ func pointEquals(a, b []float64) bool {
 }
 
 type topologyObject struct {
-	ID         string
-	Type       geojson.GeometryType
-	Properties map[string]interface{}
+	ID          string
+	Type        geojson.GeometryType
+	Properties  map[string]interface{}
+	BoundingBox []float64
 
 	Geometries []*topologyObject // For geometry collections
 	Arc        *arc              // For lines
 	Arcs       []*arc            // For multi lines and polygons
 	MultiArcs  [][]*arc          // For multi polygons
-	Point	   []float64		 // for points
-	MultiPoint [][]float64		 // for multi points
+	Point      []float64         // for points
+	MultiPoint [][]float64       // for multi points
 }

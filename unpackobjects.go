@@ -20,9 +20,10 @@ func (t *Topology) unpackObjects() {
 
 func (t *Topology) unpackObject(o *topologyObject) *Geometry {
 	obj := &Geometry{
-		ID:         o.ID,
-		Type:       o.Type,
-		Properties: o.Properties,
+		ID:          o.ID,
+		Type:        o.Type,
+		Properties:  o.Properties,
+		BoundingBox: o.BoundingBox,
 	}
 
 	switch o.Type {
