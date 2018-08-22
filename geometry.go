@@ -31,15 +31,17 @@ func (g *Geometry) MarshalJSON() ([]byte, error) {
 		ID          string                 `json:"id,omitempty"`
 		Type        geojson.GeometryType   `json:"type"`
 		Properties  map[string]interface{} `json:"properties"`
+		BoundingBox []float64              `json:"bbox,omitempty"`
 		Coordinates interface{}            `json:"coordinates,omitempty"`
 		Arcs        interface{}            `json:"arcs,omitempty"`
 		Geometries  interface{}            `json:"geometries,omitempty"`
 	}
 
 	geo := &geometry{
-		ID:         g.ID,
-		Type:       g.Type,
-		Properties: g.Properties,
+		ID:          g.ID,
+		Type:        g.Type,
+		Properties:  g.Properties,
+		BoundingBox: g.BoundingBox,
 	}
 
 	switch g.Type {

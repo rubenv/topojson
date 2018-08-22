@@ -14,12 +14,14 @@ func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 				feat := geojson.NewFeature(t.toGeometry(geometry))
 				feat.ID = geometry.ID
 				feat.Properties = geometry.Properties
+				feat.BoundingBox = geometry.BoundingBox
 				fc.AddFeature(feat)
 			}
 		default:
 			feat := geojson.NewFeature(t.toGeometry(obj))
 			feat.ID = obj.ID
 			feat.Properties = obj.Properties
+			feat.BoundingBox = obj.BoundingBox
 			fc.AddFeature(feat)
 		}
 	}
