@@ -3,12 +3,13 @@ package topojson
 import (
 	"fmt"
 
-	"github.com/paulmach/go.geojson"
+	orb "github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 )
 
-func NewTestFeature(id string, geom *geojson.Geometry) *geojson.Feature {
+func NewTestFeature(id string, geom orb.Geometry) *geojson.Feature {
 	feature := geojson.NewFeature(geom)
-	feature.SetProperty("id", id)
+	feature.ID = id
 	return feature
 }
 

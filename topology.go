@@ -3,7 +3,7 @@ package topojson
 import (
 	"encoding/json"
 
-	"github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb/geojson"
 )
 
 type Topology struct {
@@ -127,7 +127,7 @@ func pointEquals(a, b []float64) bool {
 
 type topologyObject struct {
 	ID          string
-	Type        geojson.GeometryType
+	Type        string
 	Properties  map[string]interface{}
 	BoundingBox []float64
 

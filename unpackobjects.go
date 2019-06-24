@@ -1,7 +1,7 @@
 package topojson
 
 import (
-	"github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb/geojson"
 )
 
 type arcEntry struct {
@@ -29,21 +29,21 @@ func (t *Topology) unpackObject(o *topologyObject) *Geometry {
 	}
 
 	switch o.Type {
-	case geojson.GeometryCollection:
+	default:
 		for _, geom := range o.Geometries {
 			obj.Geometries = append(obj.Geometries, t.unpackObject(geom))
 		}
-	case geojson.GeometryLineString:
+	case geojson.TypeLineString:
 		obj.LineString = t.lookupArc(o.Arc)
-	case geojson.GeometryMultiLineString:
+	case geojson.TypeMultiLineString:
 		obj.MultiLineString = t.lookupArcs(o.Arcs)
-	case geojson.GeometryPolygon:
+	case geojson.TypePolygon:
 		obj.Polygon = t.lookupArcs(o.Arcs)
-	case geojson.GeometryMultiPolygon:
+	case geojson.TypeMultiPolygon:
 		obj.MultiPolygon = t.lookupMultiArcs(o.MultiArcs)
-	case geojson.GeometryPoint:
+	case geojson.TypePoint:
 		obj.Point = o.Point
-	case geojson.GeometryMultiPoint:
+	case geojson.TypeMultiPoint:
 		obj.MultiPoint = o.MultiPoint
 	}
 

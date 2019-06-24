@@ -3,7 +3,7 @@ package topojson
 import (
 	"math"
 
-	"github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb"
 )
 
 func (t *Topology) bounds() {
@@ -20,25 +20,45 @@ func (t *Topology) bounds() {
 
 }
 
-func (t *Topology) boundGeometry(g *geojson.Geometry) {
-	switch g.Type {
-	case geojson.GeometryCollection:
-		for _, geom := range g.Geometries {
-			t.boundGeometry(geom)
+func (t *Topology) boundGeometry(g orb.Geometry) {
+	switch c := g.(type) {
+	case orb.Point:
+		t.BBox(c.Bound())
+	case orb.MultiPoint:
+		t.BBox(c.Bound())
+	case orb.LineString:
+		t.BBox(c.Bound())
+	case orb.MultiLineString:
+		t.BBox(c.Bound())
+	case orb.Polygon:
+		t.BBox(c.Bound())
+	case orb.MultiPolygon:
+		t.BBox(c.Bound())
+	case orb.Collection:
+		t.BBox(c.Bound())
+		// for _, geo := range c {
+		// 	t.boundGeometry(geo)
+		// }
+	}
+}
+
+func (t *Topology) BBox(b orb.Bound) {
+	xx := []float64{b.Min[0], b.Max[0]}
+	yy := []float64{b.Min[1], b.Max[1]}
+	for _, x := range xx {
+		if x < t.BoundingBox[0] {
+			t.BoundingBox[0] = x
 		}
-	case geojson.GeometryPoint:
-		t.boundPoint(g.Point)
-	case geojson.GeometryMultiPoint:
-		t.boundPoints(g.MultiPoint)
-	case geojson.GeometryLineString:
-		t.boundPoints(g.LineString)
-	case geojson.GeometryMultiLineString:
-		t.boundMultiPoints(g.MultiLineString)
-	case geojson.GeometryPolygon:
-		t.boundMultiPoints(g.Polygon)
-	case geojson.GeometryMultiPolygon:
-		for _, poly := range g.MultiPolygon {
-			t.boundMultiPoints(poly)
+		if x > t.BoundingBox[2] {
+			t.BoundingBox[2] = x
+		}
+	}
+	for _, y := range yy {
+		if y < t.BoundingBox[1] {
+			t.BoundingBox[1] = y
+		}
+		if y > t.BoundingBox[3] {
+			t.BoundingBox[3] = y
 		}
 	}
 }

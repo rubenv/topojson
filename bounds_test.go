@@ -4,19 +4,20 @@ import (
 	"testing"
 
 	"github.com/cheekybits/is"
-	geojson "github.com/paulmach/go.geojson"
+	orb "github.com/paulmach/orb"
+	geojson "github.com/paulmach/orb/geojson"
 )
 
 func TestBoundingBox(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("foo", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("bar", geojson.NewLineStringGeometry([][]float64{
-			{-1, 0}, {1, 0}, {-2, 3},
-		})),
+		NewTestFeature("foo", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("bar", orb.LineString{
+			orb.Point{-1, 0}, orb.Point{1, 0}, orb.Point{-2, 3},
+		}),
 	}
 
 	topo := &Topology{input: in}
