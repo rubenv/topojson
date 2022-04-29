@@ -54,7 +54,7 @@ type TopologyOptions struct {
 	// ID property key
 	IDProperty string
 
-	// Reduction algorithm,
+	// Reduction algorithm
 	ReductionAlgorithm RecuctionAlgoritm
 }
 
