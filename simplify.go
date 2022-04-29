@@ -20,7 +20,17 @@ func (t *Topology) simplify() {
 	newArcs := make([][][]float64, 0)
 	for i, arc := range t.Arcs {
 		path := geo.NewPathFromYXSlice(arc)
-		path = reducers.VisvalingamThreshold(path, t.opts.Simplify)
+		switch t.opts.ReductionAlgorithm {
+		case DouglasPeucker:
+			path = reducers.DouglasPeucker(path, t.opts.Simplify)
+		case Visvalingam:
+			path = reducers.VisvalingamThreshold(path, t.opts.Simplify)
+		case Radial:
+			path = reducers.Radial(path, t.opts.Simplify)
+		case RadialGeo:
+			path = reducers.RadialGeo(path, t.opts.Simplify)
+		}
+
 		points := path.Points()
 		newArc := make([][]float64, len(points))
 		for j, p := range points {
