@@ -6,6 +6,15 @@ import (
 	"github.com/paulmach/go.geojson"
 )
 
+type RecuctionAlgoritm int
+
+const (
+	Visvalingam    RecuctionAlgoritm = 0
+	DouglasPeucker RecuctionAlgoritm = 1
+	Radial         RecuctionAlgoritm = 2
+	RadialGeo      RecuctionAlgoritm = 3
+)
+
 type Topology struct {
 	Type      string     `json:"type"`
 	Transform *Transform `json:"transform,omitempty"`
@@ -44,6 +53,9 @@ type TopologyOptions struct {
 
 	// ID property key
 	IDProperty string
+
+	// Reduction algorithm,
+	ReductionAlgorithm RecuctionAlgoritm
 }
 
 func NewTopology(fc *geojson.FeatureCollection, opts *TopologyOptions) *Topology {
