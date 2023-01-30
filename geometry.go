@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb/geojson"
 )
 
 type Geometry struct {
 	ID          string                 `json:"id,omitempty"`
-	Type        geojson.GeometryType   `json:"type"`
+	Type        string                 `json:"type"`
 	Properties  map[string]interface{} `json:"properties"`
 	BoundingBox []float64              `json:"bbox,omitempty"`
 
@@ -29,7 +29,7 @@ func (g *Geometry) MarshalJSON() ([]byte, error) {
 	// defining a struct here lets us define the order of the JSON elements.
 	type geometry struct {
 		ID          string                 `json:"id,omitempty"`
-		Type        geojson.GeometryType   `json:"type"`
+		Type        string                 `json:"type"`
 		Properties  map[string]interface{} `json:"properties"`
 		BoundingBox []float64              `json:"bbox,omitempty"`
 		Coordinates interface{}            `json:"coordinates,omitempty"`
@@ -45,19 +45,19 @@ func (g *Geometry) MarshalJSON() ([]byte, error) {
 	}
 
 	switch g.Type {
-	case geojson.GeometryPoint:
+	case geojson.TypePoint:
 		geo.Coordinates = g.Point
-	case geojson.GeometryMultiPoint:
+	case geojson.TypeMultiPoint:
 		geo.Coordinates = g.MultiPoint
-	case geojson.GeometryLineString:
+	case geojson.TypeLineString:
 		geo.Arcs = g.LineString
-	case geojson.GeometryMultiLineString:
+	case geojson.TypeMultiLineString:
 		geo.Arcs = g.MultiLineString
-	case geojson.GeometryPolygon:
+	case geojson.TypePolygon:
 		geo.Arcs = g.Polygon
-	case geojson.GeometryMultiPolygon:
+	case geojson.TypeMultiPolygon:
 		geo.Arcs = g.MultiPolygon
-	case geojson.GeometryCollection:
+	default:
 		geo.Geometries = g.Geometries
 	}
 
@@ -83,7 +83,7 @@ func decodeGeometry(g *Geometry, object map[string]interface{}) error {
 	}
 
 	if s, ok := t.(string); ok {
-		g.Type = geojson.GeometryType(s)
+		g.Type = string(s)
 	} else {
 		return errors.New("type property not string")
 	}
@@ -98,19 +98,19 @@ func decodeGeometry(g *Geometry, object map[string]interface{}) error {
 
 	var err error
 	switch g.Type {
-	case geojson.GeometryPoint:
+	case geojson.TypePoint:
 		g.Point, err = decodePosition(object["coordinates"])
-	case geojson.GeometryMultiPoint:
+	case geojson.TypeMultiPoint:
 		g.MultiPoint, err = decodePositionSet(object["coordinates"])
-	case geojson.GeometryLineString:
+	case geojson.TypeLineString:
 		g.LineString, err = decodeArcs(object["arcs"])
-	case geojson.GeometryMultiLineString:
+	case geojson.TypeMultiLineString:
 		g.MultiLineString, err = decodeArcsSet(object["arcs"])
-	case geojson.GeometryPolygon:
+	case geojson.TypePolygon:
 		g.Polygon, err = decodeArcsSet(object["arcs"])
-	case geojson.GeometryMultiPolygon:
+	case geojson.TypeMultiPolygon:
 		g.MultiPolygon, err = decodePolygonArcs(object["arcs"])
-	case geojson.GeometryCollection:
+	default:
 		g.Geometries, err = decodeGeometries(object["geometries"])
 	}
 

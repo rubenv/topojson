@@ -1,7 +1,8 @@
 package topojson
 
 import (
-	geojson "github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb"
+	geojson "github.com/paulmach/orb/geojson"
 )
 
 func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
@@ -9,57 +10,53 @@ func (t *Topology) ToGeoJSON() *geojson.FeatureCollection {
 
 	for _, obj := range t.Objects {
 		switch obj.Type {
-		case geojson.GeometryCollection:
+		case "GeometryCollection":
 			for _, geometry := range obj.Geometries {
 				feat := geojson.NewFeature(t.toGeometry(geometry))
 				feat.ID = geometry.ID
 				feat.Properties = geometry.Properties
-				feat.BoundingBox = geometry.BoundingBox
-				fc.AddFeature(feat)
+				feat.BBox = geometry.BoundingBox
+				fc.Append(feat)
 			}
 		default:
 			feat := geojson.NewFeature(t.toGeometry(obj))
 			feat.ID = obj.ID
 			feat.Properties = obj.Properties
-			feat.BoundingBox = obj.BoundingBox
-			fc.AddFeature(feat)
+			feat.BBox = obj.BoundingBox
+			fc.Append(feat)
 		}
 	}
 
 	return fc
 }
 
-func (t *Topology) toGeometry(g *Geometry) *geojson.Geometry {
+func (t *Topology) toGeometry(g *Geometry) orb.Geometry {
 	switch g.Type {
-	case geojson.GeometryPoint:
-		return geojson.NewPointGeometry(t.packPoint(g.Point))
-	case geojson.GeometryMultiPoint:
-		return geojson.NewMultiPointGeometry(t.packPoints(g.MultiPoint)...)
-	case geojson.GeometryLineString:
-		return geojson.NewLineStringGeometry(t.packLinestring(g.LineString))
-	case geojson.GeometryMultiLineString:
-		return geojson.NewMultiLineStringGeometry(t.packMultiLinestring(g.MultiLineString)...)
-	case geojson.GeometryPolygon:
-		return geojson.NewPolygonGeometry(t.packMultiLinestring(g.Polygon))
-	case geojson.GeometryMultiPolygon:
-		polygons := make([][][][]float64, len(g.MultiPolygon))
-		for i, poly := range g.MultiPolygon {
-			polygons[i] = t.packMultiLinestring(poly)
-		}
-		return geojson.NewMultiPolygonGeometry(polygons...)
-	case geojson.GeometryCollection:
-		geometries := make([]*geojson.Geometry, len(g.Geometries))
+	case geojson.TypePoint:
+		return t.packPoint(g.Point)
+	case geojson.TypeMultiPoint:
+		return t.packPoints(g.MultiPoint)
+	case geojson.TypeLineString:
+		return t.packLinestring(g.LineString)
+	case geojson.TypeMultiLineString:
+		return t.packMultiLinestring(g.MultiLineString)
+	case geojson.TypePolygon:
+		return t.packPolygon(g.Polygon)
+	case geojson.TypeMultiPolygon:
+		return t.packMultiPolygon(g.MultiPolygon)
+	default:
+		geometries := make([]orb.Geometry, len(g.Geometries))
 		for i, geometry := range g.Geometries {
 			geometries[i] = t.toGeometry(geometry)
 		}
-		return geojson.NewCollectionGeometry(geometries...)
+		return orb.Collection(geometries)
 	}
 	return nil
 }
 
-func (t *Topology) packPoint(in []float64) []float64 {
+func (t *Topology) packPoint(in []float64) orb.Geometry {
 	if t.Transform == nil {
-		return in
+		return orb.Point{in[0], in[1]}
 	}
 
 	out := make([]float64, len(in))
@@ -70,19 +67,19 @@ func (t *Topology) packPoint(in []float64) []float64 {
 		}
 	}
 
-	return out
+	return orb.Point{out[0], out[1]}
 }
 
-func (t *Topology) packPoints(in [][]float64) [][]float64 {
-	out := make([][]float64, len(in))
+func (t *Topology) packPoints(in [][]float64) orb.Geometry {
+	out := make(orb.Collection, len(in))
 	for i, p := range in {
 		out[i] = t.packPoint(p)
 	}
 	return out
 }
 
-func (t *Topology) packLinestring(ls []int) [][]float64 {
-	result := make([][]float64, 0)
+func (t *Topology) packLinestring(ls []int) orb.Geometry {
+	result := orb.LineString{}
 	for _, a := range ls {
 		reverse := false
 		if a < 0 {
@@ -112,28 +109,47 @@ func (t *Topology) packLinestring(ls []int) [][]float64 {
 
 		if reverse {
 			for j := len(newArc) - 1; j >= 0; j-- {
-				if len(result) > 0 && pointEquals(result[len(result)-1], newArc[j]) {
+				if len(result) > 0 && pointEquals([]float64{result[len(result)-1][0], result[len(result)-1][1]}, newArc[j]) {
 					continue
 				}
-				result = append(result, newArc[j])
+				result = append(result, orb.Point{newArc[j][0], newArc[j][1]})
 			}
 		} else {
 			for j := 0; j < len(newArc); j++ {
-				if len(result) > 0 && pointEquals(result[len(result)-1], newArc[j]) {
+				if len(result) > 0 && pointEquals([]float64{result[len(result)-1][0], result[len(result)-1][1]}, newArc[j]) {
 					continue
 				}
-				result = append(result, newArc[j])
+				result = append(result, orb.Point{newArc[j][0], newArc[j][1]})
 			}
 		}
 	}
-
 	return result
 }
 
-func (t *Topology) packMultiLinestring(ls [][]int) [][][]float64 {
-	result := make([][][]float64, len(ls))
+func (t *Topology) packMultiLinestring(ls [][]int) orb.Geometry {
+	result := make(orb.MultiLineString, len(ls))
 	for i, l := range ls {
-		result[i] = t.packLinestring(l)
+		result[i] = t.packLinestring(l).(orb.LineString)
+	}
+	return result
+}
+
+func (t *Topology) packPolygon(ls [][]int) orb.Geometry {
+	result := make(orb.Polygon, len(ls))
+	for i, l := range ls {
+		s := t.packLinestring(l).(orb.LineString)
+		result[i] = make(orb.Ring, len(s))
+		for j, l := range s {
+			result[i][j] = l
+		}
+	}
+	return result
+}
+
+func (t *Topology) packMultiPolygon(ls [][][]int) orb.Geometry {
+	result := make(orb.MultiPolygon, len(ls))
+	for i, l := range ls {
+		result[i] = t.packPolygon(l).(orb.Polygon)
 	}
 	return result
 }

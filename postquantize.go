@@ -1,6 +1,8 @@
 package topojson
 
-import geojson "github.com/paulmach/go.geojson"
+import (
+	"github.com/paulmach/orb"
+)
 
 func (t *Topology) postQuantize() {
 	q0 := t.opts.PreQuantize
@@ -48,19 +50,28 @@ func (t *Topology) postQuantize() {
 	}
 
 	for i, arc := range t.Arcs {
-		t.Arcs[i] = q.quantizeLine(arc, true)
+		a := make(orb.LineString, len(arc))
+		for i, v := range arc {
+			a[i] = orb.Point{v[0], v[1]}
+		}
+		b := q.quantizeLine(a, true)
+		c := make([][]float64, len(b))
+		for i, v := range b {
+			c[i] = []float64{v[0], v[1]}
+		}
+		t.Arcs[i] = c
 	}
 }
 
-func (t *Topology) postQuantizeGeometry(q *quantize, g *geojson.Geometry) {
-	switch g.Type {
-	case geojson.GeometryCollection:
-		for _, geom := range g.Geometries {
+func (t *Topology) postQuantizeGeometry(q *quantize, g orb.Geometry) {
+	switch v := g.(type) {
+	default:
+		for _, geom := range g.(orb.Collection) {
 			t.postQuantizeGeometry(q, geom)
 		}
-	case geojson.GeometryPoint:
-		g.Point = q.quantizePoint(g.Point)
-	case geojson.GeometryMultiPoint:
-		g.MultiPoint = q.quantizeLine(g.MultiPoint, false)
+	case orb.Point:
+		v = q.quantizePoint(v)
+	case orb.LineString:
+		v = q.quantizeLine(v, false)
 	}
 }

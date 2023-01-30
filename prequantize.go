@@ -1,6 +1,8 @@
 package topojson
 
-import geojson "github.com/paulmach/go.geojson"
+import (
+	"github.com/paulmach/orb"
+)
 
 func (t *Topology) preQuantize() {
 	if t.opts.PreQuantize == 0 {
@@ -31,31 +33,29 @@ func (t *Topology) preQuantize() {
 	q := newQuantize(-x0, -y0, kx, ky)
 
 	for _, f := range t.input {
-		t.preQuantizeGeometry(q, f.Geometry)
+		t.preQuantizeGeometry(q, &f.Geometry)
 	}
 
 	t.Transform = q.Transform
 }
 
-func (t *Topology) preQuantizeGeometry(q *quantize, g *geojson.Geometry) {
-	switch g.Type {
-	case geojson.GeometryCollection:
-		for _, geom := range g.Geometries {
-			t.preQuantizeGeometry(q, geom)
+func (t *Topology) preQuantizeGeometry(q *quantize, g *orb.Geometry) {
+	switch v := (*g).(type) {
+	case orb.Collection:
+		for _, g := range v {
+			t.preQuantizeGeometry(q, &g)
 		}
-	case geojson.GeometryPoint:
-		g.Point = q.quantizePoint(g.Point)
-	case geojson.GeometryMultiPoint:
-		g.MultiPoint = q.quantizeLine(g.MultiPoint, false)
-	case geojson.GeometryLineString:
-		g.LineString = q.quantizeLine(g.LineString, true)
-	case geojson.GeometryMultiLineString:
-		g.MultiLineString = q.quantizeMultiLine(g.MultiLineString, true)
-	case geojson.GeometryPolygon:
-		g.Polygon = q.quantizeMultiLine(g.Polygon, true)
-	case geojson.GeometryMultiPolygon:
-		for i, poly := range g.MultiPolygon {
-			g.MultiPolygon[i] = q.quantizeMultiLine(poly, true)
-		}
+	case orb.Point:
+		*g = q.quantizePoint(v)
+	case orb.MultiPoint:
+		*g = q.quantizeMultiPoint(v, false)
+	case orb.LineString:
+		*g = q.quantizeLine(v, true)
+	case orb.MultiLineString:
+		*g = q.quantizeMultiLine(v, true)
+	case orb.Polygon:
+		*g = q.quantizePolygon(v, true)
+	case orb.MultiPolygon:
+		*g = q.quantizeMultiPolygon(v, true)
 	}
 }

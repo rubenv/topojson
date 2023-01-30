@@ -1,7 +1,7 @@
 package topojson
 
 import (
-	geojson "github.com/paulmach/go.geojson"
+	geojson "github.com/paulmach/orb/geojson"
 )
 
 // Filter topology into a new topology that only contains features with the given IDs
@@ -50,23 +50,23 @@ func remapGeometry(arcMap map[int]int, ids []string, g *Geometry) *Geometry {
 	}
 
 	switch g.Type {
-	case geojson.GeometryPoint:
+	case geojson.TypePoint:
 		geom.Point = g.Point
-	case geojson.GeometryMultiPoint:
+	case geojson.TypeMultiPoint:
 		geom.MultiPoint = g.MultiPoint
-	case geojson.GeometryLineString:
+	case geojson.TypeLineString:
 		geom.LineString = remapLineString(arcMap, g.LineString)
-	case geojson.GeometryMultiLineString:
+	case geojson.TypeMultiLineString:
 		geom.MultiLineString = remapMultiLineString(arcMap, g.MultiLineString)
-	case geojson.GeometryPolygon:
+	case geojson.TypePolygon:
 		geom.Polygon = remapMultiLineString(arcMap, g.Polygon)
-	case geojson.GeometryMultiPolygon:
+	case geojson.TypeMultiPolygon:
 		polygons := make([][][]int, len(g.MultiPolygon))
 		for i, poly := range g.MultiPolygon {
 			polygons[i] = remapMultiLineString(arcMap, poly)
 		}
 		geom.MultiPolygon = polygons
-	case geojson.GeometryCollection:
+	default:
 		geometries := make([]*Geometry, 0)
 		for _, geometry := range g.Geometries {
 			out := remapGeometry(arcMap, ids, geometry)

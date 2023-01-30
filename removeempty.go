@@ -1,6 +1,8 @@
 package topojson
 
-import geojson "github.com/paulmach/go.geojson"
+import (
+	geojson "github.com/paulmach/orb/geojson"
+)
 
 func (t *Topology) removeEmpty() {
 	objs := make(map[string]*Geometry, len(t.Objects))
@@ -15,7 +17,7 @@ func (t *Topology) removeEmpty() {
 
 func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 	switch obj.Type {
-	case geojson.GeometryCollection:
+	case "GeometryCollection":
 		geoms := make([]*Geometry, 0, len(obj.Geometries))
 		for _, g := range obj.Geometries {
 			geom := t.removeEmptyObjects(g)
@@ -27,11 +29,11 @@ func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 			return nil
 		}
 		obj.Geometries = geoms
-	case geojson.GeometryLineString:
+	case geojson.TypeLineString:
 		if len(obj.LineString) == 0 {
 			return nil
 		}
-	case geojson.GeometryMultiLineString:
+	case geojson.TypeMultiLineString:
 		linestrings := make([][]int, 0, len(obj.MultiLineString))
 		for _, ls := range obj.MultiLineString {
 			if len(ls) > 0 {
@@ -45,17 +47,17 @@ func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 		if len(linestrings) == 1 {
 			obj.LineString = linestrings[0]
 			obj.MultiLineString = nil
-			obj.Type = geojson.GeometryLineString
+			obj.Type = geojson.TypeLineString
 		} else {
 			obj.MultiLineString = linestrings
 		}
-	case geojson.GeometryPolygon:
+	case geojson.TypePolygon:
 		rings := t.removeEmptyPolygon(obj.Polygon)
 		if rings == nil {
 			return nil
 		}
 		obj.Polygon = rings
-	case geojson.GeometryMultiPolygon:
+	case geojson.TypeMultiPolygon:
 		polygons := make([][][]int, 0, len(obj.MultiPolygon))
 		for _, polygon := range obj.MultiPolygon {
 			rings := t.removeEmptyPolygon(polygon)
@@ -69,7 +71,7 @@ func (t *Topology) removeEmptyObjects(obj *Geometry) *Geometry {
 		if len(polygons) == 1 {
 			obj.Polygon = polygons[0]
 			obj.MultiPolygon = nil
-			obj.Type = geojson.GeometryPolygon
+			obj.Type = geojson.TypePolygon
 		} else {
 			obj.MultiPolygon = polygons
 		}

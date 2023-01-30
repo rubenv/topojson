@@ -6,7 +6,7 @@ Implements the TopoJSON specification:
 https://github.com/mbostock/topojson-specification
 
 Uses the GeoJSON implementation of paulmach:
-https://github.com/paulmach/go.geojson
+https://github.com/paulmach/orb/geojson
 
 Large parts are a port of the canonical JavaScript implementation, big chunks
 of the test suite are ported as well:

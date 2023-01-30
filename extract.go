@@ -3,7 +3,8 @@ package topojson
 import (
 	"fmt"
 
-	"github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 )
 
 func (t *Topology) extract() {
@@ -22,69 +23,78 @@ func (t *Topology) extract() {
 
 func (t *Topology) extractFeature(f *geojson.Feature) *topologyObject {
 	g := f.Geometry
-	o := t.extractGeometry(g)
+	o := t.extractGeometry(geojson.NewGeometry(g))
 
-	idProp := "id"
-	if t.opts != nil && t.opts.IDProperty != "" {
-		idProp = t.opts.IDProperty
+	// TODO
+	// idProp := "id"
+	// if t.opts != nil && t.opts.IDProperty != "" {
+	// 	idProp = t.opts.IDProperty
+	// }
+
+	if f.ID != nil {
+		o.ID = fmt.Sprint(f.ID)
 	}
-
-	id, err := f.PropertyString(idProp)
-	if err == nil {
-		o.ID = id
-	}
-
 	o.Properties = f.Properties
-	o.BoundingBox = f.BoundingBox
-
+	o.BoundingBox = f.BBox
 	return o
 }
 
 func (t *Topology) extractGeometry(g *geojson.Geometry) *topologyObject {
 	o := &topologyObject{
-		Type:        g.Type,
-		BoundingBox: g.BoundingBox,
+		Type: g.Type,
 	}
 
+	// TODO
+	// if g.Coordinates != nil {
+	// 	o.BoundingBox = []float64{
+	// 		g.Coordinates.Bound().Min[0],
+	// 		g.Coordinates.Bound().Min[1],
+	// 		g.Coordinates.Bound().Max[0],
+	// 		g.Coordinates.Bound().Max[1],
+	// 	}
+	// }
+
 	switch g.Type {
-	case geojson.GeometryCollection:
+	default:
 		for _, geom := range g.Geometries {
 			o.Geometries = append(o.Geometries, t.extractGeometry(geom))
 		}
-	case geojson.GeometryLineString:
-		o.Arc = t.extractLine(g.LineString)
-	case geojson.GeometryMultiLineString:
-		o.Arcs = make([]*arc, len(g.MultiLineString))
-		for i, l := range g.MultiLineString {
+	case geojson.TypeLineString:
+		o.Arc = t.extractLine(g.Coordinates.(orb.LineString))
+	case geojson.TypeMultiLineString:
+		o.Arcs = make([]*arc, len(g.Coordinates.(orb.MultiLineString)))
+		for i, l := range g.Coordinates.(orb.MultiLineString) {
 			o.Arcs[i] = t.extractLine(l)
 		}
-	case geojson.GeometryPolygon:
-		o.Arcs = make([]*arc, len(g.Polygon))
-		for i, r := range g.Polygon {
+	case geojson.TypePolygon:
+		o.Arcs = make([]*arc, len(g.Coordinates.(orb.Polygon)))
+		for i, r := range g.Coordinates.(orb.Polygon) {
 			o.Arcs[i] = t.extractRing(r)
 		}
-	case geojson.GeometryMultiPolygon:
-		o.MultiArcs = make([][]*arc, len(g.MultiPolygon))
-		for i, p := range g.MultiPolygon {
+	case geojson.TypeMultiPolygon:
+		o.MultiArcs = make([][]*arc, len(g.Coordinates.(orb.MultiPolygon)))
+		for i, p := range g.Coordinates.(orb.MultiPolygon) {
 			arcs := make([]*arc, len(p))
 			for j, r := range p {
 				arcs[j] = t.extractRing(r)
 			}
 			o.MultiArcs[i] = arcs
 		}
-	case geojson.GeometryPoint:
-		o.Point = g.Point
-	case geojson.GeometryMultiPoint:
-		o.MultiPoint = g.MultiPoint
+	case geojson.TypePoint:
+		o.Point = []float64{g.Coordinates.(orb.Point)[0], g.Coordinates.(orb.Point)[1]}
+	case geojson.TypeMultiPoint:
+		for _, v := range g.Coordinates.(orb.MultiPoint) {
+			o.MultiPoint = append(o.MultiPoint, []float64{v[0], v[1]})
+		}
 	}
 
 	return o
 }
 
-func (t *Topology) extractLine(line [][]float64) *arc {
+func (t *Topology) extractLine(line orb.LineString) *arc {
 	n := len(line)
 	for i := 0; i < n; i++ {
-		t.coordinates = append(t.coordinates, line[i])
+		t.coordinates = append(t.coordinates, []float64{line[i][0], line[i][1]})
 	}
 
 	index := len(t.coordinates) - 1
@@ -94,10 +104,10 @@ func (t *Topology) extractLine(line [][]float64) *arc {
 	return arc
 }
 
-func (t *Topology) extractRing(ring [][]float64) *arc {
+func (t *Topology) extractRing(ring orb.Ring) *arc {
 	n := len(ring)
 	for i := 0; i < n; i++ {
-		t.coordinates = append(t.coordinates, ring[i])
+		t.coordinates = append(t.coordinates, []float64{ring[i][0], ring[i][1]})
 	}
 
 	index := len(t.coordinates) - 1

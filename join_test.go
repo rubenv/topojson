@@ -4,7 +4,8 @@ import (
 	"testing"
 
 	"github.com/cheekybits/is"
-	"github.com/paulmach/go.geojson"
+	orb "github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 )
 
 // See https://github.com/mbostock/topojson/blob/master/test/topology/join-test.js
@@ -14,12 +15,12 @@ func TestHasJunctions(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("ab", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -35,12 +36,12 @@ func TestNonJunctions(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {2, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("ab", orb.LineString{
+			orb.Point{0, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -55,12 +56,12 @@ func TestJoinDuplicate(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("abc2", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("abc2", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -77,12 +78,12 @@ func TestJoinReversedDuplicate(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -99,16 +100,16 @@ func TestJoinDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("abca2", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		}),
+		NewTestFeature("abca2", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -123,16 +124,16 @@ func TestJoinReversedDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("acba", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {2, 0}, {1, 0}, {0, 0},
+		}),
+		NewTestFeature("acba", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -147,16 +148,16 @@ func TestJoinRotatedDuplicateRings(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("bcab", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{1, 0}, {2, 0}, {0, 0}, {1, 0},
+		}),
+		NewTestFeature("bcab", orb.Polygon{
+			orb.Ring{
+				orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0}, orb.Point{1, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -171,14 +172,14 @@ func TestJoinRingLine(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcaLine", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0}, {0, 0},
-		})),
-		NewTestFeature("abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		NewTestFeature("abcaLine", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("abcaPolygon", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -194,14 +195,14 @@ func TestJoinLineRingReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcaLine", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0}, {0, 0},
-		})),
-		NewTestFeature("bcabPolygon", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{1, 0}, {2, 0}, {0, 0}, {1, 0},
+		NewTestFeature("abcaLine", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("bcabPolygon", orb.Polygon{
+			orb.Ring{
+				orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0}, orb.Point{1, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -217,14 +218,14 @@ func TestJoinRingLineReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("bcabLine", geojson.NewLineStringGeometry([][]float64{
-			{1, 0}, {2, 0}, {0, 0}, {1, 0},
-		})),
-		NewTestFeature("abcaPolygon", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {2, 0}, {0, 0},
+		NewTestFeature("bcabLine", orb.LineString{
+			orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0}, orb.Point{1, 0},
+		}),
+		NewTestFeature("abcaPolygon", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -240,12 +241,12 @@ func TestJoinOldArcExtends(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("ab", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -263,12 +264,12 @@ func TestJoinOldArcExtendsReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("ab", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -286,12 +287,12 @@ func TestJoinNewArcSharesStart(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("ade", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 1}, {2, 1},
-		})),
+		NewTestFeature("ade", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 1}, orb.Point{2, 1},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -309,11 +310,11 @@ func TestJoinRingNoJunctions(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("aba", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 0},
+		NewTestFeature("aba", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -328,11 +329,11 @@ func TestJoinRingAANoJunctions(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("aa", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {0, 0},
+		NewTestFeature("aa", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -347,11 +348,11 @@ func TestJoinRingANoJunctions(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("a", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0},
+		NewTestFeature("a", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -366,12 +367,12 @@ func TestJoinNewLineSharesEnd(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("dec", geojson.NewLineStringGeometry([][]float64{
-			{0, 1}, {1, 1}, {2, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("dec", orb.LineString{
+			orb.Point{0, 1}, orb.Point{1, 1}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -389,12 +390,12 @@ func TestJoinNewLineExtends(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("ab", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0},
-		})),
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
+		NewTestFeature("ab", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0},
+		}),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -412,12 +413,12 @@ func TestJoinNewLineExtendsReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("ba", geojson.NewLineStringGeometry([][]float64{
-			{1, 0}, {0, 0},
-		})),
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
+		NewTestFeature("ba", orb.LineString{
+			orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -435,12 +436,12 @@ func TestJoinNewStartsMiddle(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("bc", geojson.NewLineStringGeometry([][]float64{
-			{1, 0}, {2, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("bc", orb.LineString{
+			orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -458,12 +459,12 @@ func TestJoinNewStartsMiddleReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("bc", geojson.NewLineStringGeometry([][]float64{
-			{1, 0}, {2, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("bc", orb.LineString{
+			orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -481,12 +482,12 @@ func TestJoinNewLineDeviates(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("abd", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {3, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("abd", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{3, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -505,12 +506,12 @@ func TestJoinNewLineDeviatesReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("abd", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {3, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("abd", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{3, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -529,12 +530,12 @@ func TestJoinNewLineMerges(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("dbc", geojson.NewLineStringGeometry([][]float64{
-			{3, 0}, {1, 0}, {2, 0},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("dbc", orb.LineString{
+			orb.Point{3, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -553,12 +554,12 @@ func TestJoinNewLineMergesReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("cba", geojson.NewLineStringGeometry([][]float64{
-			{2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("dbc", geojson.NewLineStringGeometry([][]float64{
-			{3, 0}, {1, 0}, {2, 0},
-		})),
+		NewTestFeature("cba", orb.LineString{
+			orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("dbc", orb.LineString{
+			orb.Point{3, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -577,12 +578,12 @@ func TestJoinNewLineSharesMidpoint(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abc", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0},
-		})),
-		NewTestFeature("dbe", geojson.NewLineStringGeometry([][]float64{
-			{0, 1}, {1, 0}, {2, 1},
-		})),
+		NewTestFeature("abc", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0},
+		}),
+		NewTestFeature("dbe", orb.LineString{
+			orb.Point{0, 1}, orb.Point{1, 0}, orb.Point{2, 1},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -602,12 +603,12 @@ func TestJoinNewLineSkipsPoint(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcde", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0},
-		})),
-		NewTestFeature("adbe", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {3, 0}, {4, 0},
-		})),
+		NewTestFeature("abcde", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{3, 0}, orb.Point{4, 0},
+		}),
+		NewTestFeature("adbe", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{3, 0}, orb.Point{4, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -626,12 +627,12 @@ func TestJoinNewLineSkipsPointReversed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("edcba", geojson.NewLineStringGeometry([][]float64{
-			{4, 0}, {3, 0}, {2, 0}, {1, 0}, {0, 0},
-		})),
-		NewTestFeature("adbe", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {3, 0}, {4, 0},
-		})),
+		NewTestFeature("edcba", orb.LineString{
+			orb.Point{4, 0}, orb.Point{3, 0}, orb.Point{2, 0}, orb.Point{1, 0}, orb.Point{0, 0},
+		}),
+		NewTestFeature("adbe", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{3, 0}, orb.Point{4, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -650,9 +651,9 @@ func TestJoinSelfIntersectsMiddle(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcdbe", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {1, 0}, {4, 0},
-		})),
+		NewTestFeature("abcdbe", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{3, 0}, orb.Point{1, 0}, orb.Point{4, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -669,9 +670,9 @@ func TestJoinSelfIntersectsStart(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abacd", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {0, 0}, {3, 0}, {4, 0},
-		})),
+		NewTestFeature("abacd", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 0}, orb.Point{3, 0}, orb.Point{4, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -688,9 +689,9 @@ func TestJoinSelfIntersectsEnd(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcdbd", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {4, 0}, {3, 0}, {4, 0},
-		})),
+		NewTestFeature("abcdbd", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{4, 0}, orb.Point{3, 0}, orb.Point{4, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -707,12 +708,12 @@ func TestJoinSelfIntersectsShares(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abcdbe", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {2, 0}, {3, 0}, {1, 0}, {4, 0},
-		})),
-		NewTestFeature("fbg", geojson.NewLineStringGeometry([][]float64{
-			{0, 1}, {1, 0}, {2, 1},
-		})),
+		NewTestFeature("abcdbe", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{2, 0}, orb.Point{3, 0}, orb.Point{1, 0}, orb.Point{4, 0},
+		}),
+		NewTestFeature("fbg", orb.LineString{
+			orb.Point{0, 1}, orb.Point{1, 0}, orb.Point{2, 1},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -732,9 +733,9 @@ func TestJoinLineClosed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewLineStringGeometry([][]float64{
-			{0, 0}, {1, 0}, {0, 1}, {0, 0},
-		})),
+		NewTestFeature("abca", orb.LineString{
+			orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -750,11 +751,11 @@ func TestJoinRingClosed(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -769,16 +770,16 @@ func TestJoinDuplicateRingsShare(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		}),
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -793,16 +794,16 @@ func TestJoinDuplicateRingsReversedShare(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("acba", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {0, 1}, {1, 0}, {0, 0},
+		}),
+		NewTestFeature("acba", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{0, 1}, orb.Point{1, 0}, orb.Point{0, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -817,16 +818,16 @@ func TestJoinCoincidentRings(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("bcab", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{1, 0}, {0, 1}, {0, 0}, {1, 0},
+		}),
+		NewTestFeature("bcab", orb.Polygon{
+			orb.Ring{
+				orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0}, orb.Point{1, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -841,16 +842,16 @@ func TestJoinCoincidentRings2(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("bacb", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{1, 0}, {0, 0}, {0, 1}, {1, 0},
+		}),
+		NewTestFeature("bacb", orb.Polygon{
+			orb.Ring{
+				orb.Point{1, 0}, orb.Point{0, 0}, orb.Point{0, 1}, orb.Point{1, 0},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -865,16 +866,16 @@ func TestJoinCoincidentRingsShare(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("dbed", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{2, 1}, {1, 0}, {2, 2}, {2, 1},
+		}),
+		NewTestFeature("dbed", orb.Polygon{
+			orb.Ring{
+				orb.Point{2, 1}, orb.Point{1, 0}, orb.Point{2, 2}, orb.Point{2, 1},
 			},
-		})),
+		}),
 	}
 
 	topo := &Topology{input: in}
@@ -890,14 +891,14 @@ func TestJoinCoincidentRingLine(t *testing.T) {
 	is := is.New(t)
 
 	in := []*geojson.Feature{
-		NewTestFeature("abca", geojson.NewPolygonGeometry([][][]float64{
-			{
-				{0, 0}, {1, 0}, {0, 1}, {0, 0},
+		NewTestFeature("abca", orb.Polygon{
+			orb.Ring{
+				orb.Point{0, 0}, orb.Point{1, 0}, orb.Point{0, 1}, orb.Point{0, 0},
 			},
-		})),
-		NewTestFeature("dbe", geojson.NewLineStringGeometry([][]float64{
-			{2, 1}, {1, 0}, {2, 2},
-		})),
+		}),
+		NewTestFeature("dbe", orb.LineString{
+			orb.Point{2, 1}, orb.Point{1, 0}, orb.Point{2, 2},
+		}),
 	}
 
 	topo := &Topology{input: in}

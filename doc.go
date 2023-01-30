@@ -5,5 +5,5 @@
 // https://github.com/mbostock/topojson-specification
 //
 // Uses the GeoJSON implementation of paulmach:
-// https://github.com/paulmach/go.geojson
+// https://github.com/paulmach/orb/geojson
 package topojson

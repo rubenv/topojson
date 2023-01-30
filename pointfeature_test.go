@@ -2,17 +2,19 @@ package topojson
 
 import (
 	"testing"
-	"github.com/paulmach/go.geojson"
+
 	"github.com/cheekybits/is"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 )
 
 func TestPointFeature(t *testing.T) {
 	is := is.New(t)
 
 	fc := geojson.NewFeatureCollection()
-	f := geojson.NewPointFeature([]float64{0, 0})
-	f.SetProperty("id", "point")
-	fc.AddFeature(f)
+	f := geojson.NewFeature(orb.Point{0, 0})
+	f.ID = "point"
+	fc.Append(f)
 
 	topo := NewTopology(fc, nil)
 
@@ -23,11 +25,11 @@ func TestMultiPointFeature(t *testing.T) {
 	is := is.New(t)
 
 	fc := geojson.NewFeatureCollection()
-	f := geojson.NewMultiPointFeature([]float64{0, 0}, []float64{1, 1})
-	f.SetProperty("id", "multipoint")
-	fc.AddFeature(f)
+	f := geojson.NewFeature(orb.MultiPoint{orb.Point{0, 0}, orb.Point{1, 1}})
+	f.ID = "multipoint"
+	fc.Append(f)
 
 	topo := NewTopology(fc, nil)
 
-	is.Equal([][]float64{{0, 0},{1, 1}}, topo.Objects["multipoint"].MultiPoint)
+	is.Equal([][]float64{{0, 0}, {1, 1}}, topo.Objects["multipoint"].MultiPoint)
 }
